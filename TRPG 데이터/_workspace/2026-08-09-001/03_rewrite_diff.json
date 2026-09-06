@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "findings_resolved": 1,
+    "findings_unresolved": 2,
+    "over_polish_warning": false
+  },
+  "edits": [
+    {
+      "finding_id": "f001",
+      "before": "양쪽을 같은 각도로 겨누고, 누가 먼저 방아쇠를 당길지만 기다리는 듯합니다.",
+      "after": "양쪽을 같은 각도로 겨누고 누가 먼저 방아쇠를 당기기만을 기다리는 듯합니다.",
+      "category": "C-11",
+      "reason": "연결어미 뒤 쉼표와 비문을 함께 정리했다."
+    }
+  ],
+  "unresolved_findings": ["f001-source-wide", "f002"]
+}

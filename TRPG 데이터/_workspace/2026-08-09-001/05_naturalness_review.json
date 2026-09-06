@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "s1_residual": 1,
+    "s2_residual": 1,
+    "over_polish_signals": [],
+    "verdict": "rewrite_round_2",
+    "quality_level": "C"
+  },
+  "residual_findings": [
+    {
+      "category": "C-11",
+      "severity": "S1",
+      "reason": "GM용 시놉시스와 장면 설계 설명에 연결어미 뒤 쉼표가 남아 있다."
+    },
+    {
+      "category": "E-2",
+      "severity": "S2",
+      "reason": "낭독문 합쇼체의 반복은 장르상 허용되지만 일부 문단의 리듬을 평평하게 한다."
+    }
+  ],
+  "next_action": {"type": "rewrite_round_2", "targets": ["f001-source-wide", "f002"]}
+}

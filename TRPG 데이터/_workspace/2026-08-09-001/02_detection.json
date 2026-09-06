@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "run_id": "2026-08-09-001",
+    "input": "2. 로그/세션 설계/남아있는 이야기/발가르에 잠든 흑룡 2/01~04",
+    "estimated_genre": "TRPG 세션 설계 및 낭독용 장면",
+    "mode": "strict",
+    "scope_note": "문서 구조와 판정용 불릿은 장르상 유지했다. 직접 인용문은 변경 대상에서 제외했다."
+  },
+  "findings": [
+    {
+      "id": "f001",
+      "category": "C-11",
+      "severity": "S1",
+      "scope": "source prose",
+      "reason": "연결어미 뒤 쉼표가 일부 남아 있어 영어식 호흡으로 읽히는 구간이 있다.",
+      "suggested_fix": "쉼표를 빼거나 문장을 나눈다."
+    },
+    {
+      "id": "f002",
+      "category": "E-2",
+      "severity": "S2",
+      "scope": "scene narration",
+      "reason": "낭독문 일부에 합쇼체 종결이 연속되어 리듬이 평평해질 수 있다.",
+      "suggested_fix": "강조 지점만 짧은 문장으로 끊되, 합쇼체는 유지한다."
+    },
+    {
+      "id": "f003",
+      "category": "C-2",
+      "severity": "not_applied",
+      "scope": "design sections",
+      "reason": "불릿은 세션 운영 정보를 빠르게 찾기 위한 장르 기능이므로 AI 문체 신호로 처리하지 않는다."
+    }
+  ]
+}

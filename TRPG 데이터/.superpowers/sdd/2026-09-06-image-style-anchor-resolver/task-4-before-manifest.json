@@ -1,0 +1,50 @@
+[
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\2. 배틀맵 생성\\AGENTS.md",
+    "SHA256": "474A9440893044FD305E9CED70A59C65542C3F0472F0B357B016E8DC6EADDE40"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\2. 배틀맵 생성\\0. 배틀맵 생성 마스터 프롬프트.md",
+    "SHA256": "F526B5F5366CAA2E97D36D55DA633019C680D9CBD1092D417F4764557E4E7410"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\6. 풍경 생성\\AGENTS.md",
+    "SHA256": "FC2A38B6F381EB21463CF85F9749C5B37DC0BCF90D340DA422ADCF8FB7A893C3"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\6. 풍경 생성\\0. 풍경 생성 마스터 프롬프트.md",
+    "SHA256": "6010CC60276EFBF6A927F9F6BAA5E201E60CD3C2E572CECB7F5EDE41BE65BA7F"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\7. 게임 아이콘 생성\\AGENTS.md",
+    "SHA256": "7C20D976C54066CB118CAF5624FAA21BDA6F2916F3C595205AE4430C672BABE0"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\7. 게임 아이콘 생성\\0. 게임 아이콘 마스터 프롬프트.md",
+    "SHA256": "C47F1874C29FBEC7C651672915E05C86949A8320F81AFDA445BA84200BC1790F"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\8. 월드 지도 생성\\AGENTS.md",
+    "SHA256": "6E90003EA0B9B22AEBD24B8BACDD2FA09D8EA947B5D7558D6EA4739E54AE89F0"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\1. 이미지 생성 모듈\\8. 월드 지도 생성\\0. 월드 지도 마스터 프롬프트.md",
+    "SHA256": "C9E665938F21FBB3A967C34F20D777345E94C7FD9ABDF05B2F4D35A0488C1108"
+  },
+  {
+    "RelativePath": "AGENTS.md",
+    "SHA256": "CCF6AF9EAA71202D0D40FDA858152ED25FED6B40A2E429CA7A31CAAE57B3914F"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\AGENTS.md",
+    "SHA256": "0C392F6BE566F5B5C95C8F94B250DF603A120F97F889D87AF4DC4FCAE6D9E0B5"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\00. TRPG 세션 매니저 프로젝트 기본 지침.md",
+    "SHA256": "7C0CBF0A1CFD3BB1B69E908525E4B397AAC8386E90A03B0F2B399FE8FB463A1F"
+  },
+  {
+    "RelativePath": "1. 프롬프트\\0. TRPG 데이터 프롬프트 통합 마스터 프롬프트.md",
+    "SHA256": "3B2DE7ECED2D73B01FAB110F1ED25FDFFC51442F23BD3E144AE99CF3FD5BC0C8"
+  }
+]
