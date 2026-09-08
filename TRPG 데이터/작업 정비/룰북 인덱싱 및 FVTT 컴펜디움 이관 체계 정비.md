@@ -14,7 +14,7 @@
 
 그러나 현재는 대부분의 룰북 수집이 끝났고, 새 룰북이 추가될 때마다 체크리스트 자체를 갱신하는 방식으로 업무 성격이 변했다. 이 때문에 별도의 시트는 더 이상 필요하지 않다고 판단했고, 기존 `9999. D&D 룰북 소유 리스트.md`를 룰북 소유·관리의 단일 정본으로 유지하도록 정비했다. 수집 룰북은 같은 파일 안에서 데이터북·시나리오북·설정북의 독립 표로 관리한다.
 
-현재 정본은 실제 수집 룰북 94개와 D&D Beyond 비교 전용 항목 14개를 구분하며, 전체 관리 범위는 108개다. 과거 Google Sheets `룰북 수집 현황`은 역할을 종료하여 제거했다.
+현재 정본은 실제 수집 룰북 96개와 D&D Beyond 비교 전용 항목 14개를 구분하며, 전체 관리 범위는 110개다. 과거 Google Sheets `룰북 수집 현황`은 역할을 종료하여 제거했다.
 
 이 정비 과정에서 다음 문제가 새로 명확해졌다.
 
@@ -515,9 +515,10 @@ module.json / LevelDB 실제 존재 크로스체크
 
 ## 실제 파일 매핑 현황
 
-- 목록 정본의 수집 룰북 94개와 D&D Beyond 비교 전용 14개, 총 108개 항목을 `0. 룰북`의 실제 PDF·Markdown 파일 139개와 대조했다.
+- 목록 정본의 수집 룰북 96개와 D&D Beyond 비교 전용 14개, 총 110개 항목을 `0. 룰북`의 고유 PDF 원본 148개와 대조했다.
 - 실제 파일명과 분할·수록 관계는 `9999. D&D 룰북 소유 리스트.md`의 `실제 파일명` 열에서 항목별로 추적한다.
-- 현재 139개 실제 파일은 모두 하나 이상의 목록 항목과 연결되어 있다.
+- 현재 고유 PDF 148개는 모두 하나 이상의 목록 항목과 연결되어 있으며 룰북 원본 Markdown은 0개다.
+- 검증 현황의 실제 파일 행은 논리 룰북 연결 기준이므로 합본·상위 룰북의 공유 PDF가 반복되어 고유 PDF 수와 다를 수 있다.
 
 ## 후속 설계 과제
 
@@ -545,9 +546,10 @@ module.json / LevelDB 실제 존재 크로스체크
 - 작업 폴더: `TRPG 데이터/작업 정비/룰북 인덱싱 및 FVTT 컴펜디움 이관 체계/`
 - 진행 현황 정본: `FVTT 룰북 검증 및 갱신 현황.md`
 - 활성 상세 인덱스 폴더: `룰북별 데이터 위치 인덱스/`
-- 비데이터북 인덱스 아카이브: `../정비 아카이브/룰북 인덱싱 및 FVTT 컴펜디움 이관 체계/룰북별 데이터 위치 인덱스/`
-- 주분류: 데이터북 35권, 시나리오북 37권, 설정북 22권, 수집 룰북 합계 94권
-- 실제 파일 현황: 전체 151행, 검증 완료 17행, 미검증 134행, 실제 파일 없음 13행
+- 비데이터북 인덱스 아카이브: 2026-09-06 정비 아카이브 정리로 현재 없음
+- 주분류: 데이터북 35권, 시나리오북 39권, 설정북 22권, 수집 룰북 합계 96권
+- 실제 파일 현황: 전체 166행, 검증 완료 17행, 미검증 149행, 실제 파일 없음 13행
+- 실제 원본 현황: 고유 PDF 148개, 룰북 원본 Markdown 0개
 - 활성 데이터북 상세 인덱스:
   1. `1. D&D 5e 2016 Volo's Guide to Monsters.md`
   2. `2. D&D 5e 2017 One Grung Above.md`
@@ -556,16 +558,16 @@ module.json / LevelDB 실제 존재 크로스체크
   5. `5. D&D 5e 2019 Mordenkainen's Fiendish Folio Volume 1.md`
   6. `6. D&D 5e 2020 Tasha’s Cauldron of Everything.md`
   7. `7. D&D 5e 2021 Fizban's Treasury of Dragons.md`
-- 아카이브된 비데이터북 상세 인덱스: 9개
+- 아카이브된 비데이터북 상세 인덱스: 현재 없음
 - 분류별 현재 대상:
-  - 데이터북: `D&D 5e 2022 Monstrous Compendium Vol. 1: Spelljammer Creatures`
+  - 데이터북: `D&D 5e 2022 Boo's Astral Menagerie`
   - 시나리오북: `D&D 5e 2017 Tomb of Annihilation`
   - 설정북: `D&D 5e 2018 Guildmasters’ Guide to Ravnica`
 
 ### 데이터북 상세 인덱스 작성 규칙
 
 - 데이터북 논리 룰북 하나당 Markdown 인덱스 파일 하나를 작성한다.
-- 파일명 앞 번호는 데이터북 표 순서이며, 다음 번호는 9번이다.
+- 파일명 앞 번호는 데이터북 표 순서이며, 다음 번호는 8번이다.
 - 원본이 여러 PDF로 분할되어도 논리 룰북 인덱스는 하나로 유지한다.
 - 분할 PDF의 위치는 `2번 PDF p.15`처럼 파일 번호와 PDF 페이지를 함께 적는다.
 - 페이지는 PDF 뷰어의 전체 페이지 번호만 사용하며, 인쇄 페이지나 이미지 속 페이지 번호는 기록하지 않는다.
@@ -588,7 +590,8 @@ module.json / LevelDB 실제 존재 크로스체크
 - 소유 목록의 `원본 확인`은 대응 실제 파일 행이 모두 `Y`일 때만 `Y`로 바꾼다.
 - 데이터북은 상세 인덱스까지 완료한 뒤 상세 인덱스 상태를 `Y`로 바꾼다.
 - 시나리오북·설정북은 전 페이지 검증 뒤 장르·핵심 주제·확인된 데이터 유형을 채우되 상세 인덱스 파일은 만들지 않는다.
-- 갱신 뒤 논리 룰북 94권, 비교 전용 14개, 실제 파일 151행과 Y·N·실제 파일 없음 수량을 다시 계산한다.
+- 갱신 뒤 논리 룰북 96권, 비교 전용 14개, 실제 파일 166행과 Y·N·실제 파일 없음 수량을 다시 계산한다.
+- 실제 파일 행과 별도로 `0. 룰북`의 고유 PDF 148개와 룰북 원본 Markdown 0개도 확인한다.
 
 ### 다른 세션 재개 절차
 
@@ -752,6 +755,38 @@ module.json / LevelDB 실제 존재 크로스체크
 - 전체 집계는 151행, 검증 완료 17행, 미검증 134행, 실제 파일 없음 13행으로 변하지 않는다.
 - 데이터북 현재 대상은 `D&D 5e 2022 Monstrous Compendium Vol. 1: Spelljammer Creatures`이며 다음 상세 인덱스 번호는 9번이다.
 
+### 2026-09-08 Dungeon Masters Play-Along Pack 2종 추가 등록
+
+- 신규 원본 `D&D 5e 2026 Dungeon Masters - Arcana Unleashed Play-Along Pack.pdf`와 `D&D 5e 2026 Dungeon Masters - Deadfall Press Play-Along Pack.pdf`를 `0. 룰북`에서 확인했다.
+- 두 자료 모두 독립된 모험·조우 진행이 중심인 Play-Along Pack이므로 시나리오북으로 등록했다.
+- 소유 목록은 시나리오북 39권, 수집 룰북 96권, Beyond 비교 전용 14개, 전체 관리 항목 110개로 갱신했다.
+- 실제 소스 파일은 Dungeon Master’s Guide의 Markdown 원본 교체분을 포함하여 141개이며, 진행 현황의 파일별 검증 행은 155행으로 갱신했다.
+- 두 신규 룰북은 원본 확인 `N`으로 등록했으며 시나리오북의 기존 진행 지점은 변경하지 않았다.
+
+### 2026-09-08 The Griffon’s Saddlebag: Book Two 원본 4분할 PDF 교체
+
+- 기존 원본 `D&D 5e 2023 The Griffon’s Saddlebag Book Two.md`가 제거되고 다음 4개 PDF로 교체된 것을 `0. 룰북`에서 확인했다.
+  1. `D&D 5e 2023 The Griffon’s Saddlebag Book Two - 1.pdf`
+  2. `D&D 5e 2023 The Griffon’s Saddlebag Book Two - 2.pdf`
+  3. `D&D 5e 2023 The Griffon’s Saddlebag Book Two - 3.pdf`
+  4. `D&D 5e 2023 The Griffon’s Saddlebag Book Two - 4.pdf`
+- 논리 룰북 수와 데이터북 분류는 변하지 않는다. 소유 목록의 실제 파일명만 4분할 PDF 묶음으로 교체했다.
+- 진행 현황은 해당 논리 룰북의 기존 Markdown 1행을 PDF 4행으로 교체하여 데이터북 실제 파일 행을 49행으로, 전체 실제 파일 행을 158행으로 갱신했다.
+- 원본 검증은 아직 수행하지 않았으므로 새 PDF 4행 모두 `N`을 유지하며, 전체 `Y 17 / N 141 / 실제 파일 없음 13`으로 갱신했다.
+- Google Drive 실제 원본 파일 수는 141개에서 144개로 갱신했다. NotebookLM 등록 소스 수는 별도 재확인 대상으로 유지한다.
+
+### 2026-09-08 룰북 원본 PDF 일괄 전환 정합성 반영
+
+- `0. 룰북` 직계 룰북 원본을 다시 집계해 고유 PDF 148개, 룰북 원본 Markdown 0개를 확인했다. 하위 `문서` 폴더의 Markdown 16개는 NotebookLM 운영 지침·레지스트리·양식이므로 룰북 원본 집계에서 제외했다.
+- 마스터가 지정한 신규·교체 PDF 24개는 `C:\Users\nihil\Downloads\룰북` 원본과 `0. 룰북` 저장본의 파일 크기 및 SHA-256이 24개 모두 일치했다.
+- 24개 PDF는 모두 암호화되지 않았고 정상적으로 열렸다. 분할본의 앞·뒤 경계에서 연속 본문과 장 전환을 확인했다.
+- `D&D 5e 2022 Spelljammer - Adventures in Space.pdf`는 204쪽 합본이며 PDF 뷰어 기준 `The Astral Adventurer's Guide` p.3, `Boo's Astral Menagerie` p.69, `Light of Xaryxis` p.135에서 각 수록본이 시작한다.
+- 활성 레지스트리와 검증 표에 남아 있던 룰북 원본 Markdown 11개 참조를 현재 PDF 연결로 교체했다. 미연결 PDF 15개를 새로 연결하고 Baldur’s Gate Gazetteer는 기존 Descent into Avernus PDF의 수록 관계로 연결했으며, Griffon 4분할·Dungeon Master’s Guide 3분할·Play-Along Pack 2종의 선행 수정은 보존했다.
+- `Baldur’s Gate Gazetteer`는 `Baldur’s Gate - Descent into Avernus.pdf`, `Frozen Sick`과 설정북 `Explorer's Guide to Wildemount`는 동일한 Wildemount 2분할 PDF, Spelljammer의 세 논리 룰북은 동일 합본 PDF에 연결했다.
+- 진행 현황은 데이터북 54행, 시나리오북 58행, 설정북 40행, Beyond 비교 전용 14행으로 총 166행이다. 검증 상태는 `Y 17 / N 149`, 실제 파일 없음은 13행이며 고유 PDF는 148개다.
+- 과거 불완전 Markdown 때문에 보류했던 `Boo's Astral Menagerie`는 완전한 합본 PDF를 확보했으므로 데이터북 8번 상세 인덱싱의 현재 대상으로 복원했다. 이번 작업은 파일 구조 검증이므로 원본 확인은 `N`을 유지한다.
+- 앞선 2026-09-08 두 기록의 141·144개 및 155·158행 수치는 일괄 전환 도중의 중간 스냅샷이며, 현행 수치는 이 기록과 문서 상단의 현재 현황을 따른다.
+
 ## Codex 진행 지점
 
 완료된 진행:
@@ -769,10 +804,11 @@ module.json / LevelDB 실제 존재 크로스체크
 11. Tasha’s Cauldron of Everything 194쪽을 검증하고 데이터북 6번 상세 인덱스를 완료했다.
 12. Fizban's Treasury of Dragons 227쪽을 검증하고 데이터북 7번 상세 인덱스를 완료했다.
 13. Boo's Astral Menagerie Markdown의 개별 설명·스탯블록·페이지 정보 누락을 확인하고 데이터북 8번 상세 인덱싱을 건너뛰었다.
+14. 룰북 원본을 고유 PDF 148개로 전환하고 활성 원본 Markdown 참조를 제거했으며, 완전한 Spelljammer 합본 확보에 따라 Boo's Astral Menagerie 8번 상세 인덱싱을 다시 현재 대상으로 복원했다.
 
 현재 진행:
 
-- 데이터북 현재 대상은 `D&D 5e 2022 Monstrous Compendium Vol. 1 Spelljammer Creatures.pdf`이며 상세 인덱스 번호는 9번이다.
+- 데이터북 현재 대상은 `D&D 5e 2022 Spelljammer - Adventures in Space.pdf`에 수록된 `Boo's Astral Menagerie`이며 상세 인덱스 번호는 8번이다.
 - 시나리오북 현재 대상은 `D&D 5e 2017 Tomb of Annihilation.pdf`다.
 - 설정북 현재 대상은 `D&D 5e 2018 Guildmasters’ Guide to Ravnica.pdf`다.
 - 세 주분류의 현재 대상은 모두 원본 대조 전이며, 추가로 확정할 미결 사항은 없다.
@@ -795,4 +831,4 @@ module.json / LevelDB 실제 존재 크로스체크
 
 ## 다음
 
-데이터북 진행을 재개할 때 `D&D 5e 2022 Monstrous Compendium Vol. 1 Spelljammer Creatures.pdf`를 대조하고 `9. D&D 5e 2022 Monstrous Compendium Vol. 1 - Spelljammer Creatures.md`를 작성한다. 시나리오북과 설정북은 각 독립 진행 지점에서 별도로 재개한다.
+데이터북 진행을 재개할 때 `D&D 5e 2022 Spelljammer - Adventures in Space.pdf`의 `Boo's Astral Menagerie` 구간을 대조하고 `8. D&D 5e 2022 Boo's Astral Menagerie.md`를 작성한다. 그다음 `Monstrous Compendium Vol. 1: Spelljammer Creatures` 9번으로 진행한다. 시나리오북과 설정북은 각 독립 진행 지점에서 별도로 재개한다.

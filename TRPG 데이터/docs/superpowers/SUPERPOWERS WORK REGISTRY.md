@@ -14,6 +14,22 @@ Superpowers 문서의 생성·업로드·검증 절차는 `SUPERPOWERS DOCUMENT 
 
 ## 현재 작업
 
+### 2026-09-09-common-map-catalog-migration
+
+- 작업명: 공용 맵 카탈로그 전환
+- 상태: 완료
+- 작업 유형: 전역 맵 자산 카탈로그 통합·세션 참조 구조 정비
+- 시작일: 2026-09-09
+- 설계: `specs/2026-09-09-common-map-catalog-migration-design.md`
+- 실행 계획: `plans/2026-09-09-common-map-catalog-migration.md`
+- 검증 보고서: `reports/2026-09-09-common-map-catalog-migration-verification.md`
+- 작업 정비: `TRPG 데이터/작업 정비/공용 맵 카탈로그 전환 정비.md`
+- 현재 결과: 공용 카탈로그 구조, 6개 맵 항목·7개 이미지 자산, UUID·코드·상태 규칙, 세션과 공용 맵의 정보 소유 경계를 확정했다.
+- 현재 결과: 공용 맵 문서 6개·이미지 7개 이관, 세션 물리 사본 0개, 활성 이전 경로 참조 0건, 이미지 SHA-256 7개 일치를 확인했다.
+- 검증: 공용 맵 문서 6개·이미지 7개·공용 UUID 6개, 세션 물리 사본 0개, 활성 이전 경로 참조 0건, 이미지 SHA-256 7개 일치를 확인했다.
+- 환경 잔여: `desktop.ini`는 제거했으며, `11. 맵 이미지/` 빈 폴더 하나만 실행 환경의 삭제 정책으로 남아 있다. 자산·참조·운영 영향은 없다.
+- 다음: 후속 작업 없음.
+
 ### 2026-09-01-rulebook-index-fvtt-compendium-tracking
 
 - 작업명: 룰북 인덱싱·검증·FVTT 컴펜디움 이관 추적 체계
@@ -22,13 +38,15 @@ Superpowers 문서의 생성·업로드·검증 절차는 `SUPERPOWERS DOCUMENT 
 - 시작일: 2026-09-01
 - 설계: `specs/2026-09-04-rulebook-primary-classification-design.md`
 - 실행 계획: `plans/2026-09-04-rulebook-primary-classification.md`
+- 추가 실행 계획: `plans/2026-09-08-rulebook-pdf-source-reconciliation.md`
 - 검증 보고서: `reports/2026-09-04-rulebook-primary-classification-verification.md`
+- 추가 검증 보고서: `reports/2026-09-08-rulebook-pdf-source-reconciliation-verification.md`
 - 작업 정비: `TRPG 데이터/작업 정비/룰북 인덱싱 및 FVTT 컴펜디움 이관 체계 정비.md`
-- 현재 결과: 수집 룰북 94권을 데이터북 35권·시나리오북 37권·설정북 22권의 독립 표로 전환하고, 실제 파일 검증 151행을 주분류별로 이관했다.
-- 완료 범위: 검증 상태 `Y 17 / N 134`와 실제 파일 없음 13행을 확인했다. 활성 상세 인덱스는 데이터북 Volo's Guide to Monsters·One Grung Above·Xanathar's Guide to Everything·Mordenkainen’s Tome of Foes·Mordenkainen's Fiendish Folio Volume 1·Tasha’s Cauldron of Everything·Fizban's Treasury of Dragons 7개이며, 비데이터북 인덱스 9개는 정비 아카이브에 보존했다.
-- 현재 진행: Boo's Astral Menagerie Markdown이 72개 이름·CR 목록만 있고 개별 설명·스탯블록·페이지 정보가 없는 불완전 원본임을 확인하여 8번 상세 인덱싱을 건너뛰었다.
-- 추가 반영: `D&D 5e 2026 Red Wizards' Gambit.pdf`와 분할 PDF `D&D 5e 2026 Arcana Unleashed - 1.pdf`·`D&D 5e 2026 Arcana Unleashed - 2.pdf`를 신규 수집 룰북·미검증 원본으로 등록했다.
-- 다음: 데이터북 Monstrous Compendium Vol. 1: Spelljammer Creatures, 시나리오북 Tomb of Annihilation, 설정북 Guildmasters’ Guide to Ravnica 중 선택한 흐름을 재개한다.
+- 현재 결과: 수집 룰북 96권을 데이터북 35권·시나리오북 39권·설정북 22권의 독립 표로 관리하고, 실제 파일 검증 166행을 주분류별로 추적한다.
+- 완료 범위: 검증 상태 `Y 17 / N 149`, 실제 파일 없음 13행, 고유 PDF 148개, 룰북 원본 Markdown 0개를 확인했다. 활성 상세 인덱스는 데이터북 Volo's Guide to Monsters·One Grung Above·Xanathar's Guide to Everything·Mordenkainen’s Tome of Foes·Mordenkainen's Fiendish Folio Volume 1·Tasha’s Cauldron of Everything·Fizban's Treasury of Dragons 7개다. 비데이터북 인덱스 아카이브는 2026-09-06 정리되어 현재 없다.
+- 현재 진행: 완전한 `Spelljammer - Adventures in Space.pdf` 합본을 확보해 과거 불완전 Markdown 때문에 건너뛴 Boo's Astral Menagerie 8번 상세 인덱싱을 현재 대상으로 복원했다.
+- 추가 반영: 마스터가 지정한 신규·교체 PDF 24개의 다운로드 원본과 저장본 SHA-256 일치를 확인하고, 제거된 룰북 원본 Markdown 참조를 현재 PDF 연결로 교체했다.
+- 다음: 데이터북 Boo's Astral Menagerie, 시나리오북 Tomb of Annihilation, 설정북 Guildmasters’ Guide to Ravnica 중 선택한 흐름을 재개한다.
 ### 2026-09-01-character-reference-v2-slot-five
 
 - 작업명: 캐릭터 레퍼런스 V2 내부 5번 이관
@@ -246,6 +264,21 @@ Superpowers 문서의 생성·업로드·검증 절차는 `SUPERPOWERS DOCUMENT 
 
 
 ## 완료 이력
+
+### 2026-09-09-entity-asset-folder-migration
+
+- 작업명: 엔터티 자산 폴더 전환
+- 상태: 완료
+- 완료일: 2026-09-09
+- 작업 유형: 작업 폴더 이미지 자산 구조 재편·저장 규칙 전환
+- 설계: `specs/2026-09-09-entity-asset-folder-migration-design.md`
+- 실행 계획: `plans/2026-09-09-entity-asset-folder-migration.md`
+- 기준선: `reports/2026-09-09-entity-asset-folder-migration-baseline.md`
+- 검증 보고서: `reports/2026-09-09-entity-asset-folder-migration-verification.md`
+- 작업 정비: `TRPG 데이터/작업 정비/엔터티 자산 폴더 전환 정비.md`
+- 완료 결과: 기존 이미지 전용 루트 13개를 대상별 자산 폴더 또는 `16. 미분류`로 전환했다. 이미지 536개의 SHA-256 다중집합, 자산 인덱스 283개, 유효·고유 UUID 283개, 이전 루트 잔존 0개를 검증했다.
+- 보류: 대상 연결 근거가 없는 이미지 43개는 `16. 미분류`에 보존했다.
+- 다음: 후속 작업 없음.
 
 ### 2026-09-07-png-webp-normalization
 

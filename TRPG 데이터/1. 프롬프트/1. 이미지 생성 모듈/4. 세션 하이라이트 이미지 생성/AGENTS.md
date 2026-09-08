@@ -23,3 +23,26 @@
 - 장면의 지배적 프레이밍을 얼굴 중심 또는 전신·행동 중심으로 분류하고 `../라이브러리/스타일/정식 스타일 호출 규칙.md`가 반환한 앵커 목록을 사용한다.
 - 여러 캐릭터 레퍼런스가 참조 예산을 차지해 활성 앵커를 줄이면 제외한 모든 앵커와 각 제외 사유를 요구사항 확인서에 기록한다.
 - 스타일 앵커의 의상·팔레트·포즈·카메라·배경·장면 구성은 가져오지 않는다.
+
+## 로그 분석·설계 장면·설계 맵 연계
+
+## 세션 분석 연계 입력 우선순위
+
+세션 하이라이트 이미지 생성은 다음 연결을 이해해야 한다.
+
+`Hxx → Pxx → scene_uuid → map_uuid`
+
+- `Hxx`: 3번 로그 분석의 기본 하이라이트 선정 결과.
+- `Pxx`: 실제 플레이 장면.
+- `scene_uuid`: 8번 세션 제작의 영구 설계 장면 UUID.
+- `map_uuid`: 8번 세션 제작의 영구 설계 맵 UUID.
+
+실제 생성에는 2번 로그 하이라이트 추출이 정밀화한 Highlight Card를 우선 입력으로 사용한다. 분석 연계 Highlight Card가 있으면 그 안의 `analysis_highlight_id`, `play_scene_refs`, `design_scene_refs`, `design_map_refs`를 따라 근거를 확인한다.
+
+- 사건의 실제 발생 내용은 원본 로그와 `Pxx`를 우선한다.
+- 이미지화할 순간의 선정은 `Hxx`와 Highlight Card를 우선한다.
+- 배경의 설계 공간은 `design_map_refs[].map_uuid`가 `confirmed`일 때 해당 설계 맵 정본을 우선한다.
+- 인물 외형은 캐릭터 레퍼런스를 우선한다.
+- `design_scene_refs[].scene_uuid`, `design_map_refs[].map_uuid`, `fvtt_scene_id`를 서로 다른 식별자로 취급한다.
+- FVTT Scene이 없어도 확정된 설계 맵이 있으면 배경 근거로 사용할 수 있다.
+- 설계 맵이 없거나 `unavailable / unmapped / uncertain`이면 로그의 환경 단서와 별도 풍경·Scene Manifest 자료를 사용하고 임의 확정하지 않는다.
