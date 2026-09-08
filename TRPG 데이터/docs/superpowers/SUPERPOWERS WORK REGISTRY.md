@@ -247,6 +247,21 @@ Superpowers 문서의 생성·업로드·검증 절차는 `SUPERPOWERS DOCUMENT 
 
 ## 완료 이력
 
+### 2026-09-07-png-webp-normalization
+
+- 작업명: PNG-WebP 이미지 포맷 정규화 및 로컬 경로 명칭 전환
+- 상태: 완료
+- 작업 유형: 전체 이미지 자산 포맷 마이그레이션·현재 참조·활성 출력 규칙·로컬 경로 정합성 정비
+- 시작일: 2026-09-07
+- 완료일: 2026-09-07
+- 설계: `specs/2026-09-07-png-webp-normalization-design.md`
+- 실행 계획: `plans/2026-09-07-png-webp-normalization.md`
+- 검증 보고서: `reports/2026-09-07-png-webp-normalization-verification.md`
+- 작업 정비: `TRPG 데이터/작업 정비/PNG WebP 이미지 포맷 정규화 정비.md`
+- 결과: PNG 334개를 lossless WebP로 변환하고 선행 미커밋 WebP 27개를 Git 원본과 검증했다. 최종 실제 PNG 0개, WebP 471개, 충돌·변환 실패·현재 참조 누락 0건이다.
+- 추가 결과: 활성 출력 규칙 4개 파일을 보정하고 이전 로컬 저장소명 5건을 `ai-data-master`로 전환했다.
+- 다음: 후속 작업 없음.
+
 ### 2026-09-06-work-folder-id-remapping
 
 - 작업명: 작업 폴더 Drive ID 일괄 이관

@@ -42,7 +42,7 @@
 
 ## 기능 경계와 연동
 
-- 룰북 원문은 Google Drive의 `TRPG 데이터/0. 룰북`에서 검색하고, 먼저 이 기능 폴더의 `9999. D&D 룰북 소유 리스트.md`를 확인한다. Codex CLI에서는 동기화된 로컬 경로로 이 Drive 자료를 조회한다.
+- 룰북 원문은 Google Drive의 `TRPG 데이터/0. 룰북`에서 검색하고, 먼저 이 기능 폴더의 `9999. D&D 룰북 소유 리스트.md`를 확인한다. Codex CLI에서는 Git 로컬 작업 폴더에서 이 자료를 조회한다.
 - 요청 대상에 맞는 기본 룰북을 직접 훑는다. 기본 룰북은 `D&D 5e 2024 Player’s Handbook`, `D&D 5e 2024 Dungeon Master’s Guide`, `D&D 5e 2025 Monster Manual`이며, 몬스터·스탯블록은 `Monster Manual`, 플레이어 규칙·주문·장비는 `Player’s Handbook`, 판정·보상·운영 규칙은 `Dungeon Master’s Guide`를 우선한다. 요청 범위가 둘 이상에 걸치거나 불명확하면 세 기본 룰북을 이 순서대로 확인한다.
 - Google Drive 룰북 자료 검색은 웹검색, 검색 엔진, 외부 웹사이트, Google Drive 커넥터 사용을 뜻하지 않는다. 룰북 자료에 없는 내용은 추정하거나 웹에서 보완하지 않고 확인 불가로 보고한다.
 - FVTT 구현은 6번, 세계관 설정 반영은 5번으로 라우팅한다.
