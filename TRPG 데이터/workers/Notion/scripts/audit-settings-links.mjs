@@ -22,6 +22,8 @@ export const FROZEN_LINK_AUDIT = Object.freeze({
 	hardUnresolved: 0,
 	sectionLinks: 15,
 	sectionHeadingsMatched: 15,
+	sectionTargetDocuments: 3,
+	sectionDependencyCycles: 0,
 	imagesPreserved: 285,
 })
 
@@ -102,9 +104,12 @@ export async function auditSettingsLinks(root = DEFAULT_ROOT) {
 		hardUnresolved: 0,
 		sectionLinks: 0,
 		sectionHeadingsMatched: 0,
+		sectionTargetDocuments: 0,
+		sectionDependencyCycles: 0,
 		imagesPreserved: 0,
 	}
 	const issues = []
+	const sectionEdges = []
 
 	for (const row of documents) {
 		const body = sourceBody(root, row.relativePath)
@@ -134,6 +139,7 @@ export async function auditSettingsLinks(root = DEFAULT_ROOT) {
 			if (resolved.resolution === "same_world") summary.sameWorldResolved += 1
 			else summary.directResolved += 1
 			if (link.heading) {
+				sectionEdges.push({ source: row.uuid, target: resolved.entry.uuid })
 				const count = headingCounts.get(resolved.entry.uuid)?.get(link.heading) ?? 0
 				if (count === 1) summary.sectionHeadingsMatched += 1
 				else {
@@ -173,6 +179,32 @@ export async function auditSettingsLinks(root = DEFAULT_ROOT) {
 			}
 		}
 	}
+
+	summary.sectionTargetDocuments = new Set(sectionEdges.map((edge) => edge.target)).size
+	const adjacency = new Map()
+	for (const edge of sectionEdges) {
+		const targets = adjacency.get(edge.source) ?? new Set()
+		targets.add(edge.target)
+		adjacency.set(edge.source, targets)
+	}
+	const visiting = new Set()
+	const visited = new Set()
+	let hasCycle = false
+	function visit(node) {
+		if (visiting.has(node)) return true
+		if (visited.has(node)) return false
+		visiting.add(node)
+		for (const target of adjacency.get(node) ?? []) {
+			if (visit(target)) return true
+		}
+		visiting.delete(node)
+		visited.add(node)
+		return false
+	}
+	for (const node of adjacency.keys()) {
+		if (visit(node)) { hasCycle = true; break }
+	}
+	summary.sectionDependencyCycles = hasCycle ? 1 : 0
 
 	return summary
 }

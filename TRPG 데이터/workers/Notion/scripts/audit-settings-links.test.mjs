@@ -14,6 +14,8 @@ test("current 338-document corpus matches the frozen wikilink preflight contract
 		hardUnresolved: 0,
 		sectionLinks: 15,
 		sectionHeadingsMatched: 15,
+		sectionTargetDocuments: 3,
+		sectionDependencyCycles: 0,
 		imagesPreserved: 285,
 	})
 })
