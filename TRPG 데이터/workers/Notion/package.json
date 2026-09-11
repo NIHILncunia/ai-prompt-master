@@ -19,7 +19,7 @@
     "sync:delta:preview": "ntn workers sync trigger settingsDelta --preview",
     "sync:delta:run": "ntn workers sync trigger settingsDelta",
     "sync:delta:status": "ntn workers sync status settingsDelta",
-    "test:settings": "tsx --test scripts/settings-admin.test.ts scripts/settings-categories.test.ts scripts/settings-schema.test.ts scripts/settings-drive.test.ts scripts/settings-document.test.ts scripts/google-drive-settings.test.ts",
+    "test:settings": "tsx --test scripts/settings-admin.test.ts scripts/settings-categories.test.ts scripts/settings-schema.test.ts scripts/settings-drive.test.ts scripts/settings-document.test.ts scripts/settings-links.test.ts scripts/google-drive-settings.test.ts",
     "test:verify:key": "node --test scripts/verify-service-account-key.test.mjs",
     "verify:key": "node --env-file=.env scripts/verify-service-account-key.mjs",
     "verify": "npm run check && npm run test:settings && npm run test:verify:key && npm run verify:key",
