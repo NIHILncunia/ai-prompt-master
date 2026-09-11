@@ -1,0 +1,47 @@
+{
+  "name": "@notion-cookbook/workers-default",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "ntn:version": "ntn --version",
+    "worker:list": "ntn workers list",
+    "worker:deploy": "node scripts/deploy-worker.mjs --yes",
+    "env:push": "ntn workers env push --file .env --yes",
+    "env:list": "ntn workers env list",
+    "sync:state": "ntn workers sync state get settingsBackfill",
+    "sync:reset": "ntn workers sync state reset settingsBackfill",
+    "sync:preview": "ntn workers sync trigger settingsBackfill --preview",
+    "sync:run": "ntn workers sync trigger settingsBackfill",
+    "sync:status": "ntn workers sync status settingsBackfill",
+    "sync:delta:preview": "ntn workers sync trigger settingsDelta --preview",
+    "sync:delta:run": "ntn workers sync trigger settingsDelta",
+    "sync:delta:status": "ntn workers sync status settingsDelta",
+    "test:settings": "tsx --test scripts/settings-admin.test.ts scripts/settings-categories.test.ts scripts/settings-schema.test.ts scripts/settings-drive.test.ts scripts/settings-document.test.ts scripts/google-drive-settings.test.ts",
+    "test:verify:key": "node --test scripts/verify-service-account-key.test.mjs",
+    "verify:key": "node --env-file=.env scripts/verify-service-account-key.mjs",
+    "verify": "npm run check && npm run test:settings && npm run test:verify:key && npm run verify:key",
+    "sync:backfill": "npm run sync:reset && npm run sync:run && npm run sync:status",
+    "db:list": "node scripts/settings-admin-cli.mjs list",
+    "db:find": "node scripts/settings-admin-cli.mjs find",
+    "db:get": "node scripts/settings-admin-cli.mjs get",
+    "db:delete": "node scripts/settings-admin-cli.mjs delete",
+    "db:resync": "node scripts/settings-admin-cli.mjs resync",
+    "db:schema:migrate": "tsx scripts/migrate-settings-schema.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.8.0"
+  },
+  "dependencies": {
+    "@notionhq/client": "^5.26.0",
+    "@notionhq/workers": ">=0.0.0"
+  }
+}
