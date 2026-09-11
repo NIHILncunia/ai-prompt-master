@@ -25,6 +25,18 @@ test("runNtnApi fixes CLI auth environment and API version", () => {
 	assert.equal(captured.options.env.NOTION_HOME, "/root/.notion")
 	assert.equal(captured.options.env.NOTION_KEYRING, "0")
 	assert.equal(captured.options.input, JSON.stringify({ hello: "world" }))
+	assert.equal(captured.options.timeout, 30_000)
+})
+
+test("runNtnApi can pass a prepared JSON file to ntn without stdin", () => {
+	let captured
+	const fakeSpawn = (command, args, options) => {
+		captured = { command, args, options }
+		return { status: 0, stdout: '{"ok":true}', stderr: "" }
+	}
+	runNtnApi("/v1/test", { method: "PATCH", dataFile: "/tmp/body.json", spawnSyncImpl: fakeSpawn })
+	assert.ok(captured.args.includes("@/tmp/body.json"))
+	assert.equal(captured.options.input, undefined)
 })
 
 test("queryAllSettingPages paginates the data source query", async () => {

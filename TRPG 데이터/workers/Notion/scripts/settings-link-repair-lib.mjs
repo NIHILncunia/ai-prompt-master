@@ -8,7 +8,12 @@ export function runNtnApi(apiPath, options = {}) {
 	const method = options.method ?? "GET"
 	const args = ["api", apiPath, "-X", method, "--notion-version", NOTION_API_VERSION]
 	let input
-	if (options.data !== undefined) {
+	if (options.data !== undefined && options.dataFile) {
+		throw new Error("runNtnApi accepts either data or dataFile, not both")
+	}
+	if (options.dataFile) {
+		args.push("-d", `@${options.dataFile}`)
+	} else if (options.data !== undefined) {
 		args.push("-d", "@-")
 		input = JSON.stringify(options.data)
 	}
@@ -21,6 +26,7 @@ export function runNtnApi(apiPath, options = {}) {
 		},
 		input,
 		encoding: "utf8",
+		timeout: options.timeoutMs ?? 30_000,
 		maxBuffer: 64 * 1024 * 1024,
 	})
 	if (result.error) throw result.error
