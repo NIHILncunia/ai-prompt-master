@@ -29,7 +29,8 @@
     "db:get": "node scripts/settings-admin-cli.mjs get",
     "db:delete": "node scripts/settings-admin-cli.mjs delete",
     "db:resync": "node scripts/settings-admin-cli.mjs resync",
-    "db:schema:migrate": "tsx scripts/migrate-settings-schema.ts"
+    "db:schema:migrate": "tsx scripts/migrate-settings-schema.ts",
+    "links:audit": "node --import tsx scripts/audit-settings-links.mjs"
   },
   "engines": {
     "node": ">=22.0.0",
