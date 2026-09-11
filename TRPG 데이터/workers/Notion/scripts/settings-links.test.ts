@@ -129,3 +129,96 @@ test("resolveWikiTarget leaves truly missing targets unresolved", () => {
 		assert.match(result.reason, /target not found/)
 	}
 })
+
+import { transformWikiLinks } from "../src/settings-links.js"
+
+test("transformWikiLinks renders page mentions, aliases, sections, relations, and preserves images/code", () => {
+	const registry = createLinkRegistry([
+		{
+			uuid: "tree",
+			title: "세계수 위그드라실",
+			stem: "세계수 위그드라실",
+			relativePath: "룩스테라/설정/개념/세계수 위그드라실.md",
+			world: "룩스테라",
+			pageId: "page-tree",
+			pageUrl: "https://www.notion.so/Page-tree",
+		},
+		{
+			uuid: "rak",
+			title: "라크샤라 대륙",
+			stem: "라크샤라 대륙",
+			relativePath: "룩스테라/설정/지형/라크샤라 대륙.md",
+			world: "룩스테라",
+			pageId: "page-rak",
+			pageUrl: "https://www.notion.so/Page-rak",
+		},
+	])
+	const markdown = `본문 [[세계수 위그드라실]] [[세계수 위그드라실|세계수]]\n[[라크샤라 대륙#용맥의 심장|용맥의 심장]] [[A ↔ B]]\n![[image.webp]]\n\`[[inline code]]\`\n\`\`\`md\n[[fenced code]]\n\`\`\``
+	const result = transformWikiLinks({
+		markdown,
+		sourceWorld: "룩스테라",
+		registry,
+		relationTargets: new Set(["A ↔ B"]),
+		resolveHeadingUrl: (entry, heading) =>
+			entry.uuid === "rak" && heading === "용맥의 심장"
+				? "https://www.notion.so/Page-rak#block-id"
+				: null,
+	})
+	assert.match(result.markdown, /<mention-page url="https:\/\/www\.notion\.so\/Page-tree">세계수 위그드라실<\/mention-page>/)
+	assert.match(result.markdown, /\[세계수\]\(https:\/\/www\.notion\.so\/Page-tree\)/)
+	assert.match(result.markdown, /\[용맥의 심장\]\(https:\/\/www\.notion\.so\/Page-rak#block-id\)/)
+	assert.match(result.markdown, / A ↔ B/)
+	assert.match(result.markdown, /!\[\[image\.webp\]\]/)
+	assert.match(result.markdown, /`\[\[inline code\]\]`/)
+	assert.match(result.markdown, /\[\[fenced code\]\]/)
+	assert.deepEqual(
+		{
+			pageLinks: result.pageLinks,
+			aliasLinks: result.aliasLinks,
+			sectionLinks: result.sectionLinks,
+			deferredRelations: result.deferredRelations,
+			imagesPreserved: result.imagesPreserved,
+			unresolved: result.unresolved.length,
+		},
+		{ pageLinks: 1, aliasLinks: 1, sectionLinks: 1, deferredRelations: 1, imagesPreserved: 1, unresolved: 0 },
+	)
+})
+
+test("transformWikiLinks leaves a section wikilink untouched when heading anchor cannot resolve", () => {
+	const registry = createLinkRegistry([
+		{
+			uuid: "rak",
+			title: "라크샤라 대륙",
+			stem: "라크샤라 대륙",
+			relativePath: "룩스테라/설정/지형/라크샤라 대륙.md",
+			world: "룩스테라",
+			pageId: "page-rak",
+			pageUrl: "https://www.notion.so/Page-rak",
+		},
+	])
+	const original = "[[라크샤라 대륙#용맥의 심장|용맥의 심장]]"
+	const result = transformWikiLinks({
+		markdown: original,
+		sourceWorld: "룩스테라",
+		registry,
+		relationTargets: new Set(),
+		resolveHeadingUrl: () => null,
+	})
+	assert.equal(result.markdown, original)
+	assert.equal(result.unresolved.length, 1)
+	assert.match(result.unresolved[0].reason, /heading/i)
+})
+
+test("transformWikiLinks leaves page links unresolved until a Notion page URL exists", () => {
+	const registry = createLinkRegistry(entries)
+	const original = "[[세계수 위그드라실]]"
+	const result = transformWikiLinks({
+		markdown: original,
+		sourceWorld: "룩스테라",
+		registry,
+		relationTargets: new Set(),
+	})
+	assert.equal(result.markdown, original)
+	assert.equal(result.unresolved.length, 1)
+	assert.match(result.unresolved[0].reason, /page URL/i)
+})

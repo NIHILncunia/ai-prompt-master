@@ -208,3 +208,128 @@ export function resolveWikiTarget(input: {
 
 	return { kind: "unresolved", reason: "target not found", candidates: [] }
 }
+
+export type HeadingAnchorResolver = (
+	entry: LinkRegistryEntry,
+	heading: string,
+) => string | null
+
+export type TransformWikiLinksResult = {
+	markdown: string
+	pageLinks: number
+	aliasLinks: number
+	sectionLinks: number
+	deferredRelations: number
+	imagesPreserved: number
+	unresolved: Array<{ raw: string; reason: string }>
+}
+
+function escapeXml(value: string): string {
+	return value
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+}
+
+function escapeMarkdownLabel(value: string): string {
+	return value.replace(/\\/g, "\\\\").replace(/\]/g, "\\]")
+}
+
+function markdownLink(label: string, url: string): string {
+	return `[${escapeMarkdownLabel(label)}](${url})`
+}
+
+export function transformWikiLinks(input: {
+	markdown: string
+	sourceWorld: LinkWorld
+	registry: LinkRegistry
+	relationTargets: ReadonlySet<string>
+	resolveHeadingUrl?: HeadingAnchorResolver
+}): TransformWikiLinksResult {
+	const links = parseWikiLinks(input.markdown)
+	const replacements: Array<{ start: number; end: number; value: string }> = []
+	const unresolved: Array<{ raw: string; reason: string }> = []
+	let pageLinks = 0
+	let aliasLinks = 0
+	let sectionLinks = 0
+	let deferredRelations = 0
+	let imagesPreserved = 0
+
+	for (const link of links) {
+		if (link.isImage) {
+			imagesPreserved += 1
+			continue
+		}
+
+		const resolved = resolveWikiTarget({
+			link,
+			sourceWorld: input.sourceWorld,
+			registry: input.registry,
+			relationTargets: input.relationTargets,
+		})
+
+		if (resolved.kind === "deferred_relation") {
+			deferredRelations += 1
+			replacements.push({ start: link.start, end: link.end, value: resolved.display })
+			continue
+		}
+		if (resolved.kind === "unresolved") {
+			unresolved.push({ raw: link.raw, reason: resolved.reason })
+			continue
+		}
+
+		const pageUrl = resolved.entry.pageUrl?.trim()
+		if (!pageUrl) {
+			unresolved.push({ raw: link.raw, reason: "Notion page URL is not available" })
+			continue
+		}
+
+		if (link.heading) {
+			const headingUrl = input.resolveHeadingUrl?.(resolved.entry, link.heading) ?? null
+			if (!headingUrl) {
+				unresolved.push({ raw: link.raw, reason: `heading URL not found: ${link.heading}` })
+				continue
+			}
+			sectionLinks += 1
+			replacements.push({
+				start: link.start,
+				end: link.end,
+				value: markdownLink(link.alias || link.heading, headingUrl),
+			})
+			continue
+		}
+
+		if (link.alias) {
+			aliasLinks += 1
+			replacements.push({
+				start: link.start,
+				end: link.end,
+				value: markdownLink(link.alias, pageUrl),
+			})
+			continue
+		}
+
+		pageLinks += 1
+		replacements.push({
+			start: link.start,
+			end: link.end,
+			value: `<mention-page url="${escapeXml(pageUrl)}">${escapeXml(resolved.entry.title)}</mention-page>`,
+		})
+	}
+
+	let markdown = input.markdown
+	for (const replacement of replacements.sort((left, right) => right.start - left.start)) {
+		markdown = `${markdown.slice(0, replacement.start)}${replacement.value}${markdown.slice(replacement.end)}`
+	}
+
+	return {
+		markdown,
+		pageLinks,
+		aliasLinks,
+		sectionLinks,
+		deferredRelations,
+		imagesPreserved,
+		unresolved,
+	}
+}
