@@ -14,6 +14,47 @@ Superpowers 문서의 생성·업로드·검증 절차는 `SUPERPOWERS DOCUMENT 
 
 ## 현재 작업
 
+### 2026-09-13-nihil-workbench-development
+
+- 작업명: Nihil Workbench 개발
+- 상태: 진행 중
+- 작업 유형: Foundry VTT D&D5e Item·Actor 제작 도구 및 스탯블록 임포터 모듈 개발
+- 시작일: 2026-09-12
+- 저장소: `/shared/fvtt/nihil-compendium-module`
+- 저장소 설계: `/shared/fvtt/nihil-compendium-module/docs/workbench/nihil-workbench-concept-v0.md`
+- 저장소 실행 계획: `/shared/fvtt/nihil-compendium-module/docs/workbench/nihil-workbench-item-mvp-plan.md`
+- 현재 상태 보고서: `reports/2026-09-13-nihil-workbench-current-state.md`
+- 작업 정비: `TRPG 데이터/작업 정비/Nihil Workbench 개발 정비.md`
+- 현재 브랜치: `fix/common-monster-cr-names`
+- 현재 HEAD: `c90aae6`
+- 완료 범위: Item Workbench v1의 ApplicationV2 2열 UI, 월드 Item 검색·선택, 기본 정보, Activity, base/extra Damage, Uses/Recharge, On-Hit/Passive ActiveEffect, 기존 Item Sheet 진입, 비파괴 저장과 `openWorkbench(itemId?)` API를 구현했다. 스탯블록 임포터도 모듈 내부로 이관되어 현재 작업 트리에 존재한다.
+- 검증: 2026-09-13 `verify-compendium-packs.test.mjs`를 제외한 테스트 전체를 실행해 40/40 통과, 실패 0건을 확인했다. 전체 suite의 pack verifier 1건은 Windows 절대경로 `F:\FVTT\...` 의존 때문에 현재 리눅스 컨테이너에서 실행 불가다. 2026-09-12 실제 룩스테라 월드 E2E에서도 Item 편집·저장·Effect 생성·기본 Sheet 진입을 확인했다.
+- 저장 상태: Workbench·Importer·현재 Pack 상태는 체크포인트 `c90aae6`에 로컬 커밋 완료. 현재 실행 환경에 GitHub HTTPS 자격증명이 없어 원격 push는 대기 중이다.
+- 현재 미완료: Foundry V13 Item Directory가 `data-entry-id`를 사용하지만 `scripts/module.mjs`의 `contextDocumentId()`는 `data-document-id`만 읽어 우클릭 `Nihil Workbench에서 편집` 진입 조건이 실패한다.
+- 다음: `tests/workbench-module.test.mjs`에 `data-entry-id` fallback 회귀 테스트를 추가하고 실패를 확인한 뒤 `contextDocumentId()`에 `documentId ?? entryId` fallback을 최소 수정하여 실환경 우클릭 진입을 재검증한다.
+
+### 2026-09-12-game-skill-icon-style-promotion
+
+- 작업명: 게임 스킬 아이콘 정규 스타일 이식 및 아이템 아이콘 확장
+- 상태: 진행 중
+- 작업 유형: 게임 아이콘 기능 전용 정식 스타일 승격·무기/장비 아이콘 스타일 확장
+- 시작일: 2026-09-12
+- 설계: `specs/2026-09-12-game-skill-icon-style-promotion-design.md`
+- 실행 계획: `plans/2026-09-12-game-skill-icon-style-promotion.md`
+- 검증 보고서: `reports/2026-09-12-game-skill-icon-style-promotion-verification.md`
+- 추가 감사 보고서: `reports/2026-09-12-game-skill-icon-anchor-coverage-audit.md`
+- 공백 테스트 검수 보고서: `reports/2026-09-12-game-skill-icon-anchor-gap-test-review.md`
+- 작업 정비: `TRPG 데이터/작업 정비/게임 스킬 아이콘 정규 스타일 이식 및 아이템 아이콘 확장 정비.md`
+- 완료 범위: `게임 스킬 아이콘` 정식 계약과 역할별 정식 앵커 01~09를 설치했다. 기존 01~05에 `06 물리 기동 / 07 공간 전이 / 08 제어·속박 / 09 저주·정신 약화`를 추가하고 중앙 스타일 호출 규칙과 7번 게임 아이콘 스타일·QA·시각 언어 라이브러리를 동기화했다. 사용자 원문은 의미 시드로 정규화한 뒤 아이콘 시각 언어로 재조립하도록 입력 해석 규칙도 유지한다.
+- 검증: 신규 06~09는 모두 512×512 RGB 비투명 래스터이며, 물리 기동·공간 전이·제어/속박·저주/정신 약화 역할을 64px 검수에서 분리했다. 기존 01~05와 합쳐 정식 앵커 9개 체계로 확장했으며, 단일 역할은 1장·복합 역할은 최대 2장 호출 원칙을 유지한다.
+- 추가 검수 보고서: `reports/2026-09-12-game-skill-icon-06a-mobility-test-review.md`
+- 추가 검증 보고서: `reports/2026-09-12-game-skill-icon-anchor-expansion-verification.md`
+- 현재 진행: 순수 스킬 아이콘 앵커 01~09 보강과 라우팅 동기화를 완료했다. 게임 아이콘 배치 저장 정책은 `TRPG 데이터/22. 아이콘 생성`의 `스킬 아이콘`·`아이템 아이콘` 분기로 전환했고, 날짜/분류/2자리 배치 번호·동명 MD·다중 시트 `-1/-2` 규칙을 확정했다. 일반 3×3 배치의 자동 분할·512/1536 재합성·낱개 저장은 폐기했다. 현재는 상위 `게임 아이템 아이콘 스타일` 개발 패키지에서 무기 검증 축을 진행 중이다. 1차 무기 2시트 테스트는 모든 무기가 과도한 속성/마법 효과로 수렴한 실패 사례로 판정했고, `속성·마법 효과 미지정 → 일반 무기`를 기본값으로 고정했다. 일반 무기는 회색·청회색·갈회색 등 저채도 중성 배경과 구조·재질 판독을 우선하며, 속성·마법 무기는 명시된 경우에만 유색 배경과 국소 효과를 사용한다.
+- 다음: 일반 무기 3×3 1장과 속성·마법 무기 3×3 1장을 같은 아이템 아이콘 배치에서 비교 생성해 무기 분기 계약을 검증한다.
+- 최신 무기 교정: 일반 무기는 회색조 배경·무효과·게임 아이템풍 렌더링, 효과 무기는 비회색 유색 배경·명시 효과를 사용한다.
+- 현재 단계: 일반 무기 앵커 후보 3×3 + 효과 무기 3×3 비교 배치 승인 대기.
+
+
 ### 2026-09-09-common-map-catalog-migration
 
 - 작업명: 공용 맵 카탈로그 전환

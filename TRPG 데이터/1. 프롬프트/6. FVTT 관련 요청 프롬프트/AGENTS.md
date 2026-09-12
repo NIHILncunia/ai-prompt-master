@@ -20,8 +20,14 @@ Foundry VTT, D&D 시스템, MIDI-QOL, DAE, Active Effect, 피트·아이템 설�
 4. `0. FVTT 관련 요청 마스터 프롬프트.md`
 5. `1. FVTT 관련 요청 지침서.md`
 6. 피트·아이템·주문·액터 설명의 `[[...]]` 또는 `@...` 경로를 작성·수정·검증할 때 `2. 피트 및 아이템 인라인 문법과 변수 사용 가이드.md`
+7. 모듈 개발, Document CRUD, Actor·Item·Scene·Token 직접 조작, D&D5e 데이터 구조, 외부 모듈 API 또는 Hook·DOM 호환성 분석이 포함되면 루트 `../../FVTT API 및 개발 참고.md`
 
 요청과 무관한 예시·라이브러리·데이터 폴더는 무조건 전부 읽지 않는다. 마스터가 지정하거나 현재 작업에 필요한 자료만 추가로 확인한다.
+
+## 활성 개발 작업
+
+- `nihil-compendium-module` 또는 `Nihil Workbench` 개발을 이어서 수행하는 요청에서는 `TRPG 데이터/작업 정비/Nihil Workbench 개발 정비.md`와 `TRPG 데이터/docs/superpowers/reports/2026-09-13-nihil-workbench-current-state.md`를 먼저 확인한다.
+- 현재 공식 재개 지점은 Item Directory의 `data-entry-id` 대응 Context Menu 회귀 테스트 및 수정이다. 이후 상태가 바뀌면 작업 정비 문서와 `SUPERPOWERS WORK REGISTRY.md`를 함께 갱신한다.
 
 ## 기능 경계와 연동
 
@@ -29,6 +35,7 @@ Foundry VTT, D&D 시스템, MIDI-QOL, DAE, Active Effect, 피트·아이템 설�
 - 4번 룰북 또는 8번 세션 제작에서 확인된 인라인 문법은 보존하고, 새 문법 조립과 롤 데이터 경로 검증은 `2. 피트 및 아이템 인라인 문법과 변수 사용 가이드.md`를 따른다.
 - 캐릭터가 포함된 VTT 토큰 이미지는 1번 이미지 생성 모듈 내부 1번 반실사 포트레이트, 게임 아이콘 이미지는 내부 7번이 담당한다.
 - 버전 정보는 변동 가능하므로 실제 작업 시 최신성을 검증하고 마스터·지침을 함께 갱신한다.
+- 구현 API와 실제 데이터 구조가 필요한 작업에서는 루트 `TRPG 데이터/FVTT API 및 개발 참고.md`의 검증 등급(Core/System/Module/Observed)을 확인하고, Observed/Internal 정보는 버전 변경 시 재검증한다.
 
 ## 동기화 원칙
 
