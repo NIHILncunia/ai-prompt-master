@@ -572,6 +572,60 @@ function contextDocumentId(entry) {
 
 DOM dataset은 Core API가 아니므로 Foundry 버전 업데이트 시 재검증한다.
 
+### Foundry V13 Item Directory Context Menu 생성 경로 — Observed/Internal
+
+2026-09-13 룩스테라 실환경에서 Item Directory의 실제 클래스와 메뉴 생성 경로를 추가 확인했다.
+
+```text
+CONFIG.ui.items                  -> ItemDirectory5e
+ui.items.constructor             -> ItemDirectory5e
+CONFIG.ui.items === ui.items.constructor -> true
+ui.items._getEntryContextOptions()        -> 실제 우클릭 메뉴 옵션 배열
+```
+
+V13의 `ItemDirectory5e._getEntryContextOptions()`는 상위 클래스 옵션을 얻은 뒤 Item 전용 항목을 직접 합쳐 반환한다. 실환경에서는 모듈이 `Hooks.on("getItemDirectoryEntryContext", ...)`를 등록해도 실제 렌더된 Item Directory 우클릭 메뉴가 그 Hook을 소비하지 않았다. 따라서 해당 Hook은 구버전 호환 fallback으로만 취급한다.
+
+또한 `ready` 시점에 이미 생성된 `ui.items` 인스턴스의 `_getEntryContextOptions()`만 래핑하면 메서드 직접 호출 결과에는 새 옵션이 보이더라도, 기존 Context Menu 인스턴스가 이전 옵션을 이미 캐시해 실제 우클릭 메뉴에는 반영되지 않을 수 있었다.
+
+V13에서 실제로 동작한 방식은 **Context Menu 생성 전에 클래스 prototype을 조기 패치**하는 것이다.
+
+```js
+const ItemDirectoryClass = CONFIG.ui.items;
+const prototype = ItemDirectoryClass?.prototype;
+const original = prototype._getEntryContextOptions;
+
+prototype._getEntryContextOptions = function(...args) {
+  const options = original.apply(this, args) ?? [];
+  options.push({
+    name: "Nihil Workbench에서 편집",
+    condition: li => Boolean(game.items.get(li.dataset.entryId)),
+    callback: li => openWorkbench(li.dataset.entryId),
+  });
+  return options;
+};
+```
+
+실제 구현에서는 다음 안전장치를 함께 사용한다.
+
+- 기존 옵션 배열을 보존하고 새 항목만 append한다.
+- `Symbol.for(...)` 마커로 중복 패치를 방지한다.
+- `CONFIG.ui.items.prototype`을 우선 패치해 Context Menu 생성 전에 반영한다.
+- 이미 생성된 환경을 위한 fallback으로 `ui.items` 인스턴스도 동일 로직으로 패치한다.
+- Item ID는 `documentId ?? entryId` fallback으로 읽는다.
+- 구버전 호환을 위해 기존 `getItemDirectoryEntryContext` Hook 등록은 유지할 수 있다.
+
+실환경 검증 결과:
+
+```text
+보조마스터1 / GM role 4
+Item: 벽력일섬
+entryId: GRHni5TzCo1ffejo
+실제 렌더 메뉴: Nihil Workbench에서 편집 표시됨
+메뉴 클릭: Workbench 창 정상 진입
+```
+
+`CONFIG.ui.items`, `_getEntryContextOptions()`, Sidebar DOM, Context Menu 캐시 시점은 모두 공개 안정 API로 보장된 계약이 아니므로 Foundry 버전 변경 시 재검증한다.
+
 ---
 
 ## 13. Actor 복제 패턴
@@ -661,7 +715,296 @@ const ok = await fetch(imagePath, { cache: "no-store" })
 
 ---
 
-## 16. 문서 갱신 규칙
+## 16. Item Directory 렌더·Item 생성·복제 — Verified / Observed
+
+2026-09-13 룩스테라 실환경(Foundry VTT 13.351 / D&D5e 5.2.4)에서 다음 흐름을 직접 검증했다.
+
+### Item Directory render Hook
+
+Item Directory를 강제 렌더했을 때 다음 두 Hook이 실제 발생했다.
+
+```text
+renderItemDirectory5e(ItemDirectory5e, HTMLElement, Object, Object)
+renderItemDirectory(ItemDirectory5e, HTMLElement, Object, Object)
+```
+
+모듈이 Item Directory footer에 UI를 추가할 때는 범용 `renderItemDirectory` Hook을 사용해 실제 `HTMLElement`에서 `.directory-footer`를 찾고 중복 여부를 확인한 뒤 버튼을 append하는 방식이 동작했다.
+
+```js
+Hooks.on("renderItemDirectory", (_app, html) => {
+  const footer = html.querySelector(".directory-footer");
+  if (!footer || footer.querySelector(".ncm-open-workbench")) return;
+  // button 생성 및 append
+});
+```
+
+Sidebar가 접혀 있을 때 Item Directory 본문은 viewport 밖에 위치할 수 있다. 실환경 검증에서는 `ui.sidebar.expand()` 후 `ui.sidebar.activateTab("items")`로 실제 가시 상태를 만들 수 있었다. 이 Sidebar 메서드는 버전 민감성이 있으므로 `Observed/Internal`로 취급한다.
+
+### Foundry 기본 Item 생성 다이얼로그
+
+`Item.createDialog()`가 존재하며 실제로 Foundry 기본 `아이템 만들기` Application을 연다. 이번 검증에서는 다이얼로그 표시까지만 확인했고 실제 신규 Item 저장은 수행하지 않았다.
+
+```js
+const created = await Item.createDialog();
+```
+
+Workbench에서는 생성 결과가 Item Document를 반환하는 경우 해당 `id`를 자동 선택하도록 연결했다. 반환값·취소 동작·type별 최소 생성 데이터는 이후 Item 생성 심화 단계에서 추가 검증한다.
+
+### World Item 영속 복제
+
+D&D5e Item 인스턴스는 `canDuplicate` getter와 `clone()`을 제공한다. 실환경에서 `canDuplicate === true`를 확인했다.
+
+D&D5e 5.2.4의 `clone()` override는 `options.save`가 true일 때 상위 Document clone 경로를 사용한다. 다음 호출로 새 World Item이 실제 저장됐다.
+
+```js
+const clone = await item.clone(
+  { name: `${item.name} (복제)` },
+  { save: true }
+);
+```
+
+검증 결과:
+
+```text
+원본과 복제본 ID 다름
+원본과 복제본 type 동일
+복제 직후 game.items 수 +1
+game.items.get(clone.id)로 readback 가능
+복제본 delete 후 game.items 수 원복
+```
+
+Workbench의 복제 흐름은 복제 성공 후 `selectItem(clone.id)`를 호출하여 새 복제본을 자동 선택한다.
+
+---
+
+## 17. Item Folder 관계와 Workbench 폴더 탐색 — Verified / Observed
+
+2026-09-13 룩스테라 실환경에서 World Item 폴더 구조를 확인했다. 현재 Item Folder는 21개이며 최대 깊이는 3단계다. 동일한 폴더명(`01. 피트`, `02. 공격`)이 서로 다른 부모 아래 반복되므로 **이름이 아니라 Folder ID로 관계를 추적해야 한다.**
+
+### World Item Folder 읽기
+
+Item Folder 목록은 `game.folders`에서 `type === "Item"`으로 필터링할 수 있었다.
+
+```js
+const itemFolders = Array.from(game.folders.values())
+  .filter(folder => folder.type === "Item");
+```
+
+실환경에서 다음 관계가 확인됐다.
+
+```text
+folder.id          -> 현재 Folder ID
+folder.folder      -> 부모 Folder Document 또는 null
+folder.folder.id   -> 부모 Folder ID
+item.folder        -> Item이 속한 Folder Document 또는 null
+item.folder.id     -> Item이 속한 Folder ID
+```
+
+따라서 특정 현재 폴더의 **직계 하위 폴더**와 **직계 Item**은 다음처럼 구분할 수 있다.
+
+```js
+const childFolders = itemFolders.filter(
+  folder => (folder.folder?.id ?? null) === currentFolderId
+);
+
+const currentItems = Array.from(game.items.values()).filter(
+  item => (item.folder?.id ?? null) === currentFolderId
+);
+```
+
+`currentFolderId === null`은 루트로 취급한다.
+
+### Breadcrumb 구성
+
+현재 Folder에서 부모 `folder.folder`를 반복해서 따라가면 루트까지의 경로를 만들 수 있다. 순환 방지를 위해 Folder ID `Set`을 함께 사용한다.
+
+```js
+const breadcrumbs = [];
+let folder = game.folders.get(currentFolderId);
+const seen = new Set();
+
+while (folder && !seen.has(folder.id)) {
+  seen.add(folder.id);
+  breadcrumbs.unshift({ id: folder.id, name: folder.name });
+  folder = folder.folder ?? null;
+}
+```
+
+Nihil Workbench는 이 구조를 사용해 트리 전체를 한 화면에 펼치지 않고, 상단 breadcrumb + 상위 이동 버튼 + 현재 폴더 직계 항목만 보여주는 탐색기 UI를 구현했다.
+
+실환경 검증 경로:
+
+```text
+루트
+→ 01. 룩스테라 관련
+→ 01. 위그드라실
+→ 01. 피트
+→ 위그드라실의 가호
+```
+
+각 단계에서 손자 폴더는 목록에 직접 나타나지 않았고, `↑` 상위 이동과 breadcrumb의 `루트` 직접 이동도 정상 동작했다.
+
+`game.folders`, Folder Document의 `folder` 관계, Item Document의 `folder` 관계는 Foundry Document 모델에 기반하지만 세부 형태는 버전 변화 가능성이 있으므로 Foundry/D&D5e 업그레이드 시 readback 검증한다.
+
+### Item Folder 생성 다이얼로그
+
+Foundry V13에서 `Folder.createDialog(data = {}, createOptions = {}, dialogOptions = {})` 시그니처를 실환경에서 확인했다. Item Directory의 기본 `폴더 만들기` 동작도 다음 데이터를 넘긴다.
+
+```js
+Folder.createDialog({
+  folder: currentFolderId ?? null,
+  type: "Item"
+});
+```
+
+`folder`에는 부모 Folder ID를 넣고, 루트 생성은 `null`을 사용한다. `type: "Item"`으로 Item Directory Folder임을 지정한다.
+
+Workbench의 `폴더 생성` 버튼은 이 기본 다이얼로그를 재사용한다. 생성 결과가 Folder Document를 반환하면 새 Folder ID를 `currentFolderId`로 설정하여 방금 만든 폴더로 자동 진입한다.
+
+실환경에서는 `Folder.create({name, type: "Item", folder: parentId})`로 parent 저장을 별도 readback 검증했으며, 테스트 Folder 생성 시 Item Folder 수가 `21 → 22`, 삭제 후 `21`로 원복됐다.
+
+---
+
+## 18. 후속 실환경 API 조사 큐
+
+Nihil Workbench 개발이 현재 Item 중심 범위를 지나 Actor·Spell·Class까지 확장될 때 다음 영역을 순차적으로 실환경 검증한다. 이 목록은 **조사 예정 범위**이며, 아직 검증하지 않은 경로나 메서드를 확정 API처럼 기록하지 않는다.
+
+### Actor
+
+- Actor 생성·복제·수정·삭제
+- `system` 기본 능력치·HP·AC·이동속도·숙련·면역/저항/취약·기술 구조
+- Prototype Token과 현재 Scene Token의 관계
+- Embedded Item / ActiveEffect CRUD
+- NPC/몬스터 CR·스탯·행동 데이터 구조
+- Actor Directory Context Menu와 우클릭 진입
+
+### Item
+
+- Item 생성·복제·수정·삭제
+- weapon / equipment / feat / consumable 등 Item type별 최소 생성 데이터
+- Activity 생성·복제·삭제와 discriminator별 차이
+- Damage / Uses / Recovery / ActiveEffect / target effect 구조
+- Compendium Item과 World Item 사이의 복제·편집 경계
+
+### Spell
+
+- Spell Item 최소 생성 데이터
+- 레벨·학파·준비 방식·ritual·concentration 구조
+- Cast / Attack / Save / Damage / Heal Activity
+- 주문 슬롯·소모·스케일링과 Activity consumption
+- Spellcasting ability와 Actor roll data 연결
+
+### Class / Subclass / Advancement
+
+- Class·Subclass Item 최소 생성 데이터
+- 레벨·Hit Dice·spellcasting 구조
+- Advancement 생성·수정·삭제
+- Item Grant / Scale Value / Trait / Ability Score 등 Advancement 유형
+- Class ↔ Subclass 연결 방식
+- 레벨 상승 시 Embedded Feature 부여 흐름
+
+### 공통 조사 원칙
+
+각 항목은 다음 순서로 기록한다.
+
+1. 실제 FVTT 13.351 / D&D5e 5.2.4 World에서 최소 샘플을 생성하거나 기존 Document를 읽는다.
+2. `toObject()` 저장 원본과 런타임 파생값을 분리한다.
+3. 가능한 경우 Core API / System 구조 / Module API / Observed/Internal로 등급을 나눈다.
+4. 최소 생성·수정 코드와 readback 검증 코드를 함께 남긴다.
+5. 임시 테스트 Document는 검증 후 정리한다.
+6. 버전 변화에 민감한 DOM·prototype·private/internal 경로는 명시적으로 경고한다.
+
+이 큐는 현재 진행 중인 Nihil Workbench 기능 개발을 우선 완료한 뒤 단계적으로 소화한다.
+
+## 19. D&D5e Item 타입·Activity·Advancement 커버리지 기준 — Verified
+
+2026-09-13 `AI-GPT` GM 세션에서 `NCM TEST - Item Type Coverage` 폴더를 만들고 D&D5e 5.2.4 Item type별 최소 World Item을 생성해 `toObject()`와 기본 Sheet를 조사했다. 테스트 Folder ID는 `GiSH31ECzGsc4P3a`다.
+
+런타임 type key는 `base`, `weapon`, `equipment`, `consumable`, `tool`, `loot`, `race`, `background`, `class`, `subclass`, `spell`, `feat`, `container`, `backpack`, `facility` 15개였다. 기본 `Item.createDialog()`에서 사용자가 선택 가능한 타입은 `base`를 제외한 14개였다. `base`는 전용 Sheet가 없었고, `backpack`은 생성 후 실제 World Document/Sheet에서 `container`로 정규화됐다.
+
+현재 Workbench adapter는 공통적으로 `name / img / description / Uses / Activity 목록 / 일부 Damage / 일부 ActiveEffect`만 모델링한다. 따라서 Weapon 이외 타입도 열 수는 있지만 전체 설정을 지원한다고 볼 수 없다. 상세 요구사항 정본은 다음 문서에 기록했다.
+
+`/shared/fvtt/nihil-compendium-module/docs/workbench/nihil-workbench-item-type-coverage-2026-09-13.md`
+
+D&D5e 핵심 Activity discriminator는 다음 12종을 확인했다.
+
+`attack`, `cast`, `check`, `damage`, `enchant`, `forward`, `heal`, `order`, `save`, `summon`, `transform`, `utility`
+
+현재 World에는 외부 모듈이 등록한 것으로 보이는 `ddbmacro` Activity type도 추가로 존재한다. 외부 discriminator는 D&D5e 핵심 지원과 분리하고 원본 보존 + fallback 원칙을 적용한다.
+
+Advancement type은 다음 8종을 확인했다.
+
+`AbilityScoreImprovement`, `HitPoints`, `ItemChoice`, `ItemGrant`, `ScaleValue`, `Size`, `Subclass`, `Trait`
+
+Class / Background / Race / Subclass / Feat 완전 지원을 위해 Advancement editor가 독립 서브시스템으로 필요하다.
+
+개발 원칙은 "설정 항목을 줄이는 간편화"가 아니라 "기본 Sheet의 의미 있는 설정을 모두 유지하면서 더 빠르게 편집하는 간편화"로 확정한다.
+
+## 20. World Folder 변경 Hook과 열린 Workbench 동기화 — Verified
+
+2026-09-13 Foundry V13 실환경에서 Item Folder 생성 시 `createFolder` Hook이 발생하는 것을 Workbench 동기화에 사용했다.
+
+```js
+Hooks.on("createFolder", folder => {
+  if (folder?.type === "Item") refreshWorkbench();
+});
+```
+
+`refreshWorkbench()`는 Workbench singleton이 존재하고 닫힌 상태가 아닐 때 `render({ force: true })`를 호출한다. Workbench가 열려 있지 않으면 아무 작업도 하지 않는다.
+
+AI-GPT 실환경에서 Workbench를 열어 둔 상태로 `Folder.create({ name, type: "Item", folder: null })`를 실행했을 때 새 Folder가 Workbench Browser에 자동 반영됨을 확인했다. 테스트 Folder는 즉시 삭제했다.
+
+Folder rename/move/delete 및 Item create/update/move/delete는 별도 backlog `SYNC-002`, `SYNC-003`으로 추적하며 각각 Hook 시그니처와 상태 복구 규칙을 검증한다.
+
+## 21. Folder update/delete Hook과 현재 Folder 상태 복구 — Verified
+
+Foundry V13에서 다음 Hook 시그니처를 실환경 확인했다.
+
+```js
+Hooks.on("updateFolder", (folder, changes, options, userId) => {});
+Hooks.on("preDeleteFolder", (folder, options, userId) => {});
+Hooks.on("deleteFolder", (folder, options, userId) => {});
+```
+
+`updateFolder`는 변경 후 Folder 상태를 전달하므로 rename/move는 열린 Workbench 재렌더만으로 breadcrumb가 갱신됐다. `preDeleteFolder`에서는 삭제 전 `folder.folder?.id`로 parent ID를 확보할 수 있었다. 이를 Map에 저장한 뒤 `deleteFolder`에서 현재 Workbench Folder와 삭제 Folder ID가 같으면 저장한 parent로 `currentFolderId`를 전환하고 재렌더한다. 루트 직계 Folder의 parent는 `null`이므로 루트로 복귀한다.
+
+AI-GPT E2E에서 `rename → move → delete` 순으로 검증했으며, 삭제 시 이동 후의 부모 Folder로 정확히 복귀했다.
+
+## 22. World Item 변경 Hook과 열린 Workbench 동기화 — Verified
+
+Foundry V13에서 World Item 변경 동기화에 `createItem`, `updateItem`, `deleteItem` Hook을 사용했다.
+
+```js
+Hooks.on("createItem", item => refreshWorkbench());
+Hooks.on("updateItem", item => syncUpdatedItem(item));
+Hooks.on("deleteItem", item => refreshWorkbench());
+```
+
+선택 중인 Item이 외부에서 다른 Folder로 이동된 경우 `updateItem`에서 `item.folder?.id`를 새 `currentFolderId`로 사용해 Browser가 선택 Item을 따라가도록 했다. 선택 Item이 삭제되면 재렌더 과정에서 Item lookup이 실패하므로 선택을 해제하고 현재 Folder는 유지한다.
+
+AI-GPT E2E에서 Item 생성, 이름 변경, Folder 이동, 삭제를 순서대로 검증했다.
+
+## 23. D&D5e Item Source / Identifier / Identification 스키마 — Verified
+
+D&D5e 5.2.4 Item의 `system.source` 공통 스키마는 `book`, `page`, `custom`, `license`, `revision`, `rules` 6필드이며, `system.identifier`가 별도 공통 필드로 존재한다. Native `Configure Source` UI에서 이 7개를 모두 사용자 편집 가능 항목으로 노출함을 확인했다. `rules` 값은 빈 값, `2024`, `2014`를 사용한다.
+
+Workbench에서는 source 객체 전체를 교체하지 않고 `system.source.<field>` dotted path만 update하여 알 수 없는/향후 확장 필드를 보존한다.
+
+Identification은 `weapon`, `equipment`, `consumable`, `tool`, `loot`, `container` 계열에서 `system.identified`와 `system.unidentified`를 제공한다. `system.unidentified` schema는 `name`, `description` 두 필드다. Spell/Class/Race/Feat/Facility 등에는 identification field 자체가 없으므로 Workbench도 조건부로 UI와 update path를 제공한다.
+
+AI-GPT 실환경에서 Weapon Fixture 저장/readback/원복 및 Spell 비노출을 확인했다.
+
+## 24. D&D5e Item Inventory / Economy / Attunement 스키마 — Verified
+
+물리 Item 계열 `weapon`, `equipment`, `consumable`, `tool`, `loot`, `container`에서 `quantity`, `weight`, `price`, `rarity`, `container` 공통 필드를 확인했다. `container`는 nullable `ForeignDocumentField`이며 World Item에서는 Container Item ID가 저장된다. `Item.<id>` UUID를 입력해도 D&D5e가 ID로 정규화했다.
+
+`weight`는 `value`와 `units`를 가지며 현재 `CONFIG.DND5E.weightUnits`는 `lb`, `tn`, `kg`, `Mg`를 제공한다. `price`는 `value`와 `denomination`을 가지며 currency key는 `pp`, `gp`, `ep`, `sp`, `cp`다. `rarity`는 `common`, `uncommon`, `rare`, `veryRare`, `legendary`, `artifact`를 사용한다.
+
+장착/조율 필드는 `weapon`, `equipment`, `consumable`, `tool`, `container`에서 `equipped`, `attunement`, `attuned`로 확인됐다. Loot에는 Inventory/Economy는 있으나 장착/조율 필드는 없다. `CONFIG.DND5E.attunementTypes`는 `required`, `optional`을 제공하며 빈 문자열은 조율 없음으로 사용된다.
+
+Workbench는 각 필드의 dotted path만 부분 update하며, 지원하지 않는 Item 타입에는 해당 UI와 update path를 만들지 않는다. Weapon Fixture 저장/readback/원복과 Spell/Loot 비지원 UI 미노출을 AI-GPT 실환경에서 검증했다.
+
+## 25. 문서 갱신 규칙
 
 다음 조건에서 이 문서를 갱신한다.
 

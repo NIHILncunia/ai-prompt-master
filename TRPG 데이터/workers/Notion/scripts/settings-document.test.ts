@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { normalizeSettingDocument } from "../src/settings-document.js"
+import { classifySettingRepositoryPath, normalizeSettingDocument } from "../src/settings-document.js"
 import type { SettingMeta } from "../src/settings-drive.js"
 
 function normalized(relativePath: string, meta: SettingMeta, body = "") {
@@ -116,4 +116,12 @@ test("status outside the frozen catalog is unresolved", () => {
 		body: "",
 	})
 	assert.deepEqual(result, { unresolved: ["상태가 허용값 밖에 있음: 검토 중"] })
+})
+
+
+test("legacy Notion template export path is excluded exactly", () => {
+	assert.deepEqual(
+		classifySettingRepositoryPath("룩스테라/비밀 설정/비밀 설정.md"),
+		{ skip: true },
+	)
 })

@@ -6,6 +6,10 @@ export type SettingMarkdownClassification =
 	| { kind: "skip" }
 	| { kind: "setting"; meta: SettingMeta; body: string }
 
+export type SettingSourceParse =
+	| { kind: "skip" }
+	| { kind: "document"; meta: SettingMeta; body: string }
+
 export type BackfillTraversalState = {
 	folderQueue: string[]
 	currentPageToken?: string
@@ -61,6 +65,37 @@ function unquote(value: string): string {
 		return trimmed.slice(1, -1)
 	}
 	return trimmed
+}
+
+export function parseSettingMarkdownSource(
+	source: string,
+	fallbackMeta: SettingMeta = {},
+): SettingSourceParse {
+	const normalized = source.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n")
+	if (!normalized.startsWith("---\n")) return { kind: "skip" }
+
+	const frontmatterEnd = normalized.indexOf("\n---\n", 4)
+	if (frontmatterEnd === -1) return { kind: "skip" }
+
+	const meta: SettingMeta = {}
+	for (const line of normalized.slice(4, frontmatterEnd).split("\n")) {
+		const match = line.match(/^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/)
+		if (!match) continue
+		meta[match[1]] = unquote(match[2])
+	}
+	for (const [key, value] of Object.entries(fallbackMeta)) {
+		if (!(key in meta) || !meta[key]?.trim()) meta[key] = value
+	}
+
+	if (!meta.title?.trim()) throw new Error("Canonical setting document must contain title")
+	if (!meta.uuid?.trim()) throw new Error(`Canonical setting document ${meta.title} must contain uuid`)
+	meta.uuid = normalizeUuid(meta.uuid)
+
+	return {
+		kind: "document",
+		meta,
+		body: normalized.slice(frontmatterEnd + 5).trim(),
+	}
 }
 
 export function classifySettingMarkdown(source: string): SettingMarkdownClassification {

@@ -4,10 +4,42 @@ import {
 	advanceBackfillTraversal,
 	classifySettingMarkdown,
 	inspectSettingMarkdown,
+	parseSettingMarkdownSource,
 	isWithinDriveTree,
 	nextDeltaCursorStep,
 	resolveDriveRelativePath,
 } from "../src/settings-drive.js"
+
+
+
+test("parseSettingMarkdownSource accepts UTF-8 BOM and CRLF frontmatter", () => {
+	const parsed = parseSettingMarkdownSource(`\uFEFF---\r\ntitle: BOM Canon\r\nuuid: 66666666-7777-4888-8999-aaaaaaaaaaaa\r\ndocType: setting\r\nstatus: 완료\r\n---\r\n# Body\r\n`)
+	assert.equal(parsed.kind, "document")
+	if (parsed.kind !== "document") return
+	assert.equal(parsed.meta.title, "BOM Canon")
+	assert.equal(parsed.meta.uuid, "66666666-7777-4888-8999-aaaaaaaaaaaa")
+	assert.equal(parsed.body, "# Body")
+})
+
+test("parseSettingMarkdownSource accepts deity and missing-docType canonical documents", () => {
+	for (const source of [
+		`---\ntitle: Deity\nuuid: B984C536-3737-415D-BE4B-23F6F84A7C76\ndocType: deity\nstatus: 완료\n---\n# Divine Body\n`,
+		`---\ntitle: Legacy Canon\nuuid: 11111111-2222-4333-8444-555555555555\nstatus: 완료\n---\n# Canon Body\n`,
+	]) {
+		const parsed = parseSettingMarkdownSource(source)
+		assert.equal(parsed.kind, "document")
+		if (parsed.kind !== "document") continue
+		assert.match(parsed.meta.uuid, /^[0-9a-f-]{36}$/)
+		assert.match(parsed.body, /^# /)
+	}
+})
+
+test("parseSettingMarkdownSource rejects an included canonical document without UUID", () => {
+	assert.throws(
+		() => parseSettingMarkdownSource(`---\ntitle: Broken Canon\nstatus: 완료\n---\nBody\n`),
+		/uuid/i,
+	)
+})
 
 test("classifySettingMarkdown returns a normalized setting with body", () => {
 	const parsed = classifySettingMarkdown(`---\ntitle: Sample\nuuid: B984C536-3737-415D-BE4B-23F6F84A7C76\ndocType: setting\ntype: 인물\n---\n# Body\n`)

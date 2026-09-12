@@ -80,7 +80,7 @@ Workbench·Importer·현재 Pack 상태는 로컬 체크포인트 `c90aae6`에 �
 
 ## 최신 자동 테스트
 
-- 테스트 요약: `40 tests / 40 pass / 0 fail`
+- 테스트 요약: `69 tests / 69 pass / 0 fail`
 - Git 상태: `로컬 커밋 완료 / push 대기` — 현재 HEAD `c90aae6`; HTTPS 인증 자격증명 부재로 원격 push는 실패했다.
 
 2026-09-13 재검증 명령:
@@ -92,65 +92,114 @@ node --test tests/workbench-item-adapter.test.mjs tests/workbench-module.test.mj
 결과:
 
 ```text
-37 tests
-37 pass
+48 tests
+48 pass
 0 fail
 ```
 
 따라서 현재 저장된 Workbench/Importer 단위·정적 계약 테스트는 모두 통과한다.
 
-## 현재 미완료 지점
+## 2026-09-13 Context Menu 수정 완료
 
-### Item Directory 우클릭 진입 버그
+Item Directory 우클릭 진입 버그는 실환경 재조사 후 수정 완료했다.
 
-실제 Foundry V13 Item Directory의 엔트리는 Item ID를 `data-entry-id`에 둔다.
-
-실환경에서 확인한 구조:
+실측 결과:
 
 ```text
 entry.dataset.entryId     -> Item ID 존재
 entry.dataset.documentId  -> null
+CONFIG.ui.items            -> ItemDirectory5e
+CONFIG.ui.items === ui.items.constructor -> true
 ```
 
-하지만 현재 `scripts/module.mjs`의 `contextDocumentId()`는 `documentId`만 읽는다.
+초기 `documentId ?? entryId` fallback만으로는 condition은 true가 되었지만 실제 우클릭 메뉴에는 Workbench 항목이 나타나지 않았다. 추가 조사에서 V13의 실제 Context Menu 옵션은 `ItemDirectory5e._getEntryContextOptions()`가 생성하고, 이미 생성된 Context Menu는 ready 이전 옵션을 캐시한다는 점을 확인했다.
 
-현재 코드:
+최종 구현:
 
-```js
-function contextDocumentId(entry) {
-  if (typeof entry?.data === 'function') return entry.data('documentId') ?? null;
-  const element = entry?.[0] ?? entry;
-  return element?.dataset?.documentId ?? null;
-}
-```
+- `contextDocumentId()`에서 `documentId ?? entryId` fallback.
+- `CONFIG.ui.items.prototype._getEntryContextOptions()` 조기 비파괴 래핑.
+- 기존 옵션 배열 보존 후 Workbench 옵션 append.
+- `Symbol.for()` 마커로 중복 래핑 방지.
+- 이미 생성된 환경을 위한 `ui.items` instance fallback.
+- 기존 `getItemDirectoryEntryContext` Hook은 구버전 fallback으로 유지.
 
-따라서 Context Menu 항목은 등록되더라도 실제 Item 엔트리에서 condition이 false가 되어 `Nihil Workbench에서 편집`이 정상 노출되지 않을 수 있다.
+실환경 검증:
 
-확정된 수정 방향:
+- 사용자: `보조마스터1`, GM role 4.
+- 월드 Item `벽력일섬`에서 실제 우클릭 메뉴에 `Nihil Workbench에서 편집` 표시 확인.
+- 메뉴 클릭 후 Workbench 창 진입 확인.
+- 환경 의존 pack verifier를 제외한 전체 테스트 69/69 통과.
 
-```js
-function contextDocumentId(entry) {
-  if (typeof entry?.data === 'function') {
-    return entry.data('documentId') ?? entry.data('entryId') ?? null;
-  }
-  const element = entry?.[0] ?? entry;
-  return element?.dataset?.documentId ?? element?.dataset?.entryId ?? null;
-}
-```
+현재 Context Menu 수정은 체크포인트 `c90aae6` 이후 작업 트리에 있으며 아직 후속 커밋하지 않았다.
 
-이 수정은 아직 코드에 반영하지 않았다.
+## 최근 UI 보정
+
+- 입력창·버튼 높이 `32px` 통일.
+- Item Browser Item 행 `52px` 유지.
+- Folder 행도 `52px`로 통일해 목록 행 높이 일관성을 맞춤.
+- 실환경 computed style 검증 완료.
+
+## 2026-09-13 Item 런처·생성·복제 UX 완료
+
+추가 완료 범위:
+
+- Item Directory `renderItemDirectory` Hook에서 footer에 `Nihil Workbench` 버튼 삽입.
+- 버튼 노출은 `Gamemaster`와 `AI-GPT` User ID 화이트리스트로 제한.
+- `openWorkbench()` 무인자 호출 시 이전 선택까지 초기화하여 왼쪽 편집기를 빈 상태로 시작.
+- 우클릭 진입은 Item ID를 전달하므로 선택 진입 유지.
+- Workbench 우측 하단에 화이트리스트 전용 `아이템 생성` / `아이템 복제` 버튼 추가.
+- 선택 Item이 없으면 복제 disabled.
+- `item.clone(..., {save:true})`로 World Item 영속 복제 후 복제본 자동 선택.
+- `Item.createDialog()`로 Foundry 기본 Item 생성 다이얼로그 연결.
+
+실환경 검증 (`AI-GPT`, role 4):
+
+- Sidebar expand 후 Item Directory footer 런처 가시 확인.
+- 빈 선택 Workbench 진입 확인.
+- 생성/복제 버튼 표시 확인.
+- 복제 disabled/enabled 전환 확인.
+- 복제 시 World Item 수 +1 및 새 ID 확인.
+- 복제본 자동 선택 확인.
+- 테스트 복제본 삭제 후 Item 수 원복.
+- `아이템 만들기` 기본 생성 다이얼로그 표시 확인.
+- 전체 회귀 테스트 69/69 통과(환경 의존 pack verifier 제외).
+
+## 2026-09-13 Item Folder 생성 완료
+
+Workbench 우측 하단에 화이트리스트 전용 `폴더 생성` 버튼을 추가했다. 현재 Folder ID를 부모로 `Folder.createDialog()`를 열고, 생성된 Folder를 자동으로 현재 위치로 선택한다. 실환경에서 parent ID readback과 임시 Folder 생성·삭제 원복을 확인했다. 전체 회귀 테스트는 환경 의존 pack verifier 제외 `69/69` 통과했다.
+
+## 2026-09-13 Item Browser 폴더 탐색기 완료
+
+우측 Item Browser를 Foundry World Item Folder 관계를 반영하는 단일 폴더 탐색 방식으로 전환했다.
+
+- Folder 관계는 `folder.id`, `folder.folder?.id`, `item.folder?.id`를 사용.
+- `currentFolderId`가 null이면 루트.
+- 목록에는 현재 Folder의 직계 child Folder와 직계 Item만 렌더.
+- breadcrumb와 상위 이동 제공.
+- Item 선택 시 Browser 위치를 해당 Item Folder로 동기화.
+- 실환경 데이터: Item Folder 21개, 최대 깊이 3.
+
+E2E에서 `루트 → 01. 룩스테라 관련 → 01. 위그드라실 → 01. 피트` 이동, `위그드라실의 가호` 표시, 부모 이동, breadcrumb 루트 복귀를 확인했다. 전체 회귀 테스트는 환경 의존 pack verifier 제외 `69/69` 통과했다.
+
+## 2026-09-13 Item 전 타입 커버리지 분석
+
+전용 테스트 Folder `NCM TEST - Item Type Coverage`를 생성하고 D&D5e 5.2.4 Item type 15종을 실환경에 생성했다. `base`는 내부 타입, `backpack`은 container 호환 alias로 분류했다. 사용자 생성 대상 14종의 기본 Sheet와 저장 원본을 대조했고, 현재 Workbench가 공통 설명·Uses·일부 Damage/Activity/Effect 수준만 지원함을 확인했다.
+
+D&D5e 핵심 Activity 12종 및 Advancement 8종도 런타임에서 확인했다. 상세 보고서: `docs/workbench/nihil-workbench-item-type-coverage-2026-09-13.md`.
+
+발견 이슈 및 개선사항의 단일 backlog: `docs/workbench/nihil-workbench-backlog-2026-09-13.md`.
+
+## 2026-09-13 CORE-001 / CORE-002 완료
+
+Identifier/Source 전체 필드와 조건부 Identification/Unidentified 편집을 Workbench에 추가했다. Weapon Fixture E2E와 Spell 비지원 UI 미노출을 검증했다. 빈 상태 메시지 중앙 정렬 UI 보정도 완료했다. 전체 회귀 테스트는 환경 의존 pack verifier 제외 `69/69` 통과했다.
+
+## 2026-09-13 CORE-003 / CORE-004 완료
+
+물리 Item의 Inventory/Economy 및 장착/조율 공통 필드를 조건부 편집하도록 확장했다. Weapon E2E 및 Spell/Loot 비지원 UI 미노출을 검증했다. 전체 테스트는 환경 의존 pack verifier 제외 `69/69` 통과했다.
 
 ## 정확한 재개 지점
 
-다음 세션에서 Nihil Workbench 개발을 재개할 때 첫 작업은 다음과 같다.
-
-1. `scripts/module.mjs`의 `contextDocumentId()`에 `entryId` fallback을 추가하는 회귀 테스트를 먼저 작성한다.
-2. 테스트가 기존 코드에서 실패하는지 확인한다.
-3. 최소 수정으로 `documentId ?? entryId` fallback을 적용한다.
-4. 관련 테스트 전체를 실행한다.
-5. 실제 룩스테라 월드의 Item Directory에서 `애쉬` 등 월드 Item을 우클릭해 `Nihil Workbench에서 편집`이 표시되는지 확인한다.
-6. 메뉴 클릭 시 해당 Item ID로 Workbench가 열리는지 확인한다.
-7. Context Menu 버그가 해결된 뒤 Item MVP v1 완료 상태를 다시 판정한다.
+`SYNC-001`~`SYNC-003` 외부 Folder/Item 실시간 동기화는 완료했다. 다음 구현은 공통 Item Core `CORE-006` Uses / Recovery 완전 지원이다.
 
 ## 이후 로드맵
 
@@ -158,10 +207,11 @@ function contextDocumentId(entry) {
 
 ### v2
 
-- 신규 Item 생성.
-- Item 복제.
+- 기본 Item 생성 다이얼로그 연결 — 완료.
+- World Item 복제·자동 선택 — 완료.
 - Compendium 선택/편집 지원 검토.
 - 효과 프리셋 확장.
+- 필요 시 Workbench-native 생성 UX 확장.
 
 ### v3 / Actor
 

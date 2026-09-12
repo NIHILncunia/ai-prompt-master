@@ -52,6 +52,7 @@ export function classifySettingRepositoryPath(relativePath: string):
 	| { skip: true }
 	| { world: SettingWorld; role: "설정" | "신격" | "비밀 설정" | "용종 도감" } {
 	const segments = pathSegments(relativePath)
+	if (segments.join("/") === "룩스테라/비밀 설정/비밀 설정.md") return { skip: true }
 	const root = segments[0]
 	const role = segments[1]
 	const world: SettingWorld | undefined = root === "위그드라실"
