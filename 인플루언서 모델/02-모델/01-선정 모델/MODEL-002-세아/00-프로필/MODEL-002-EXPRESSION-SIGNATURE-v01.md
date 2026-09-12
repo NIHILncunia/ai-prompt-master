@@ -1,21 +1,22 @@
 # MODEL-002 백세아 — Expression Signature v1
 
-기준일: 2026-09-07
+기준일: 2026-09-10
 
 ## 1. 목적
 
 이 문서는 세아가 다양한 감정을 표현할 때에도 동일 인물의 감정 습관이 유지되도록 표정의 중심, 강도와 변주 규칙을 정의한다.
 
-정체성 우선순위는 `FACE MASTER → Expression Signature → 필요한 EXPRESSION 보드` 순서로 사용한다. 표정 보드는 얼굴 골격의 MASTER를 대체하지 않는다.
+정체성 우선순위는 `FACE MASTER → EXPRESSION-BOARD-STANDARD-v02.md → Expression Signature → 필요한 EXPRESSION 보드` 순서로 사용한다. 표정 보드는 얼굴 골격의 MASTER를 대체하지 않는다.
 
 ## 2. 관찰 기준 자료
 
-- `MODEL-002-ANCHOR-HALF-v02.png` — FACE MASTER / ACTIVE
-- `MODEL-002-EXPRESSION-BOARD-01-BASELINE-v01.png`
-- `MODEL-002-EXPRESSION-BOARD-02-POSITIVE-v01.png`
-- `MODEL-002-EXPRESSION-BOARD-03-PLAYFUL-v01.png`
-- `MODEL-002-EXPRESSION-BOARD-04-NARRATIVE-v01.png`
-- `MODEL-002-EXPRESSION-BOARD-05-SADNESS-v01.png`
+- `MODEL-002-ANCHOR-HALF-v04.png` — FACE MASTER / ACTIVE, 정확한 9:16 루네바 이너웨어 정면 흉상
+- `MODEL-002-EXPRESSION-BOARD-01-BASELINE-v02.png`
+- `MODEL-002-EXPRESSION-BOARD-02-POSITIVE-v02.png`
+- `MODEL-002-EXPRESSION-BOARD-03-PLAYFUL-v02.png`
+- `MODEL-002-EXPRESSION-BOARD-04-NARRATIVE-v02.png`
+- `MODEL-002-EXPRESSION-BOARD-05-SADNESS-v02.png`
+- `MODEL-002-EXPRESSION-BOARD-06-EDITORIAL-ALLURE-v01.png`
 
 ## 3. 핵심 표정 서명
 

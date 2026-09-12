@@ -1,21 +1,22 @@
 # MODEL-001 차예린 — Expression Signature v1
 
-기준일: 2026-09-07
+기준일: 2026-09-10
 
 ## 1. 목적
 
 이 문서는 예린의 감정 종류를 제한하는 문서가 아니라, 같은 감정을 표현하더라도 예린답게 보이도록 표정의 시작점, 변화 방식, 강도와 습관을 고정한다.
 
-정체성 우선순위는 `FACE MASTER → Expression Signature → 필요한 EXPRESSION 보드` 순서로 사용한다. 표정 보드는 얼굴 골격의 MASTER를 대체하지 않는다.
+정체성 우선순위는 `FACE MASTER → EXPRESSION-BOARD-STANDARD-v02.md → Expression Signature → 필요한 EXPRESSION 보드` 순서로 사용한다. 표정 보드는 얼굴 골격의 MASTER를 대체하지 않는다.
 
 ## 2. 관찰 기준 자료
 
-- `MODEL-001-ANCHOR-HALF-v01.png` — FACE MASTER / ACTIVE
-- `MODEL-001-EXPRESSION-BOARD-01-BASELINE-v01.png`
-- `MODEL-001-EXPRESSION-BOARD-02-POSITIVE-v01.png`
-- `MODEL-001-EXPRESSION-BOARD-03-PLAYFUL-v01.png`
-- `MODEL-001-EXPRESSION-BOARD-04-NARRATIVE-v01.png`
-- `MODEL-001-EXPRESSION-BOARD-05-SADNESS-v01.png`
+- `MODEL-001-ANCHOR-HALF-v03.png` — FACE MASTER / ACTIVE, 정확한 9:16 루네바 이너웨어 정면 흉상
+- `MODEL-001-EXPRESSION-BOARD-01-BASELINE-v02.png`
+- `MODEL-001-EXPRESSION-BOARD-02-POSITIVE-v02.png`
+- `MODEL-001-EXPRESSION-BOARD-03-PLAYFUL-v02.png`
+- `MODEL-001-EXPRESSION-BOARD-04-NARRATIVE-v02.png`
+- `MODEL-001-EXPRESSION-BOARD-05-SADNESS-v02.png`
+- `MODEL-001-EXPRESSION-BOARD-06-EDITORIAL-ALLURE-v01.png`
 
 ## 3. 핵심 표정 서명
 

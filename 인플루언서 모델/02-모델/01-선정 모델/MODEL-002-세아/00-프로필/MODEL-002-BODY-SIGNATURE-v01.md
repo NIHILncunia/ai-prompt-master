@@ -1,6 +1,6 @@
 # MODEL-002 백세아 — Body Signature v1
 
-기준일: 2026-09-07
+기준일: 2026-09-10
 
 ## 1. 목적
 
@@ -13,7 +13,7 @@
 - 키 167cm / 체중 51kg
 - B84–W59–H88cm
 - 언더바스트 약 69cm / 70C
-- `MODEL-002-ANCHOR-BODY-4VIEW-v02.png` — BODY MASTER / ACTIVE
+- `MODEL-002-ANCHOR-BODY-FRONT-v02.png` / `MODEL-002-ANCHOR-BODY-SIDE-v03.png` / `MODEL-002-ANCHOR-BODY-BACK-v02.png` — BODY MASTER / ACTIVE
 - `MODEL-002-ANCHOR-FULL-v01.png` — FULL MASTER / ACTIVE
 
 ## 3. 핵심 신체 서명

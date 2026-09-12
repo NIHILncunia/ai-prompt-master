@@ -4,13 +4,13 @@
 
 - 모델 ID: MODEL-002
 - 이름: 백세아
-- 기준 이미지: `MODEL-002-ANCHOR-FULL-v01.png`, `MODEL-002-ANCHOR-HALF-v02.png`
-- 구버전: `MODEL-002-ANCHOR-HALF-v01.png` — `99-보관`, DEPRECATED
-- 분석 기준일: 2026-09-07
+- 기준 이미지: `MODEL-002-ANCHOR-FULL-v01.png`, `MODEL-002-ANCHOR-HALF-v04.png`
+- 구버전: `MODEL-002-ANCHOR-HALF-v01.png`, `MODEL-002-ANCHOR-HALF-v02.png` — `99-보관`, DEPRECATED
+- 분석 기준일: 2026-09-10
 - 용도: 얼굴 정체성 유지용 구조 명세
 - 상태: ACTIVE
 
-현재 `HALF-v01`은 보관 폴더로 이동되어 있고 `HALF-v02`가 활성 앵커 폴더에 있으므로 Morphology Card는 v02를 사용한다. 강한 마젠타·블루 무대 조명과 메이크업은 얼굴 구조와 분리하여 해석한다.
+현재 `HALF-v01`부터 `HALF-v03`은 보관 폴더의 DEPRECATED 자료이고, 루네바 이너웨어를 착용한 정확한 9:16 정면 흉상 `HALF-v04`가 활성 앵커다. Morphology Card는 v04를 우선한다.
 
 ## 2. 전체 얼굴 구조
 

@@ -9,7 +9,7 @@
 - 국적: 대한민국
 - 소속: LUNEVA MANAGEMENT
 - 활동 형태: 독립 모델·인플루언서
-- 프로필 기준일: 2026-09-06
+- 프로필 기준일: 2026-09-10
 
 ## 신체 프로필
 
@@ -37,9 +37,9 @@
 ## 정체성 기준
 
 - 최초 선정 이미지: 후보 확인 시트 17번
-- FACE MASTER: `MODEL-001-ANCHOR-HALF-v01.png` — ACTIVE
+- FACE MASTER: `MODEL-001-ANCHOR-HALF-v03.png` — ACTIVE, 정확한 9:16 루네바 이너웨어 정면 흉상 정본
 - FULL MASTER: `MODEL-001-ANCHOR-FULL-v01.png` — ACTIVE
-- BODY MASTER: `MODEL-001-ANCHOR-BODY-4VIEW-v02.png` — ACTIVE
+- BODY MASTER: `MODEL-001-ANCHOR-BODY-FRONT-v02.png` / `MODEL-001-ANCHOR-BODY-SIDE-v02.png` / `MODEL-001-ANCHOR-BODY-BACK-v02.png` — 검은 하단 마감까지 정합화한 3분리 ACTIVE 정본
 - 얼굴 형태 명세: `MODEL-001-MORPHOLOGY-v01.md`
 - 앵커 매니페스트: `MODEL-001-ANCHOR-MANIFEST-v01.md`
 - 표정 서명: `MODEL-001-EXPRESSION-SIGNATURE-v01.md`
@@ -60,22 +60,28 @@
 
 - Expression Signature: `MODEL-001-EXPRESSION-SIGNATURE-v01.md`
 - 핵심 성향: 절제되고 정돈된 표정에서 시작해 눈매와 입꼬리 변화가 점진적으로 확장되는 타입
-- 표정 생성 우선순위: `FACE MASTER → Expression Signature → 장면에 필요한 EXPRESSION 보드`
+- 표정 생성 우선순위: `FACE MASTER → EXPRESSION-BOARD-STANDARD-v02 → Expression Signature → 해당 EXPRESSION 보드`
 - 동일한 기본 미소를 모든 이미지에 반복하지 않고 장면의 감정 강도에 따라 시선, 입술, 눈썹, 고개 움직임을 변주한다.
 - 표정 변화 때문에 얼굴 골격, 눈 크기, 입 폭과 턱 형태 자체가 달라지지 않게 한다.
 
 ## Seedance 2.5 영상 레퍼런스 시트
 
-- 공통 제작 지침: `seedance-2.5-3panel-reference-sheet-guide-v2.md`
+- 공통 제작 지침: `seedance-2.5-3panel-reference-sheet-guide-v3.md`
 - 저장 위치: `05-영상/Seedance-2.5-레퍼런스-시트/`
+- 승인 자산: `MODEL-001-MOTION-REFSHEET-BASE-v04.png` — LUNEVA 등록 피팅 복장 BASE 버전
 - 승인 자산: `MODEL-001-MOTION-REFSHEET-CASUAL-v01.png` — 편안한 민소매 나시·데님 버전
 - 승인 자산: `MODEL-001-MOTION-REFSHEET-STAGE-v01.png` — 블랙 무대 의상 버전
 - 두 시트는 Seedance 2.5 영상용 참조 자산이며 FACE MASTER, FULL MASTER, BODY MASTER를 대체하지 않는다.
 - 시트 구조는 정면 신체 전용 / 후면 전신·헤어 / 유일한 얼굴 정본의 3패널로 유지한다.
-- PANEL 1과 PANEL 2는 동일한 신체 지오메트리·키·카메라 거리·바닥선을 사용하며, PANEL 1에서는 머리만 제거하고 머리 높이 공간을 그대로 비워 둔다.
+- PANEL 1과 PANEL 2는 동일한 신체 지오메트리·키·카메라 거리·바닥선·어깨선 높이를 사용하며, PANEL 1에서는 머리만 제거하고 머리 높이 공간을 그대로 비워 둔다.
+- PANEL 3은 상반신이 아닌 얼굴 정체성 전용 대형 두상이며, 정수리부터 턱선까지를 최대한 크게 보인다.
 - 복장별로 새 시트를 만들 수 있으나 얼굴·신체 정체성은 승인 앵커와 Morphology Card·Body Signature를 우선한다.
 
 ## 버전 기록
 
-- `BODY-4VIEW-v02`는 현재 활성 BODY MASTER다.
+- `BODY-FRONT-v02` / `BODY-SIDE-v02` / `BODY-BACK-v02`가 현재 활성 BODY MASTER다. 각 v01은 상의 하단 검은 마감 누락으로 DEPRECATED다.
+- `HALF-v03`는 정확한 9:16 루네바 이너웨어 정면 흉상 FACE MASTER다. 기존 `HALF-v01`, `HALF-v02`는 `99-보관`의 DEPRECATED 자료다.
+- `EXPRESSION-BOARD-01`~`05` v02와 `06-EDITORIAL-ALLURE-v01`은 24종·6보드 ACTIVE 표정 스펙트럼이다. 기존 v01 보드는 `99-보관`의 DEPRECATED 자료다.
+- `MOTION-REFSHEET-BASE-v04`는 PANEL 1·2의 어깨선·신체 스케일·바닥선을 유지하면서, 루네바 등록 피팅복의 상의 하단 검은 마감과 전·후면 마크 배치를 정합화한 ACTIVE 시트다. v01부터 v03은 `99-보관`의 DEPRECATED 자료다.
+- `BODY-4VIEW-v02`는 2026-09-10 새 3분리 BODY MASTER로 대체되어 `99-보관`의 DEPRECATED 자료다.
 - `BODY-4VIEW-v01`은 2026-09-07 Google Drive 전체 검색에서 확인되지 않았다. 과거 버전을 임의로 재생성하거나 번호를 되돌리지 않는다.

@@ -39,16 +39,35 @@ LUNEVA MANAGEMENT는 브랜드가 전하고자 하는 이미지와 소속 모델
 
 ## 비주얼 아이덴티티
 
-- 공식 심벌명: Lunar Stage
-- 공식 워드마크: 12번 서체 방향
-- 공식 락업: 심벌 왼쪽, `LUNEVA` 오른쪽, `MANAGEMENT` 하단 왼쪽 정렬
-- 심벌과 워드마크 간격: 기준 이미지에서 8px로 확정. 크기 변경 시 동일 비율로 확대·축소한다.
+- 공식 심벌명: Orbit Frame
+- 공식 심벌 버전: v02
+- 공식 워드마크: 기존 `LUNEVA` 세리프 워드마크와 하단 `MANAGEMENT` 조판 방향 유지
+- 공식 락업:
+  1. Vertical Lockup — 심벌 상단, `LUNEVA` 하단, `MANAGEMENT` 최하단 중앙 정렬
+  2. Horizontal Lockup — 심벌 왼쪽, `LUNEVA` 오른쪽, `MANAGEMENT` 하단 왼쪽 정렬
+- 배경 버전:
+  1. Light — White 또는 Lunar Ivory 배경 / Noir Ink 워드마크·심벌 + Champagne Beam 포인트
+  2. Dark — Noir Ink 또는 Black 배경 / Lunar Ivory 워드마크·심벌 + Champagne Beam 포인트
 - Noir Ink: `#101117`
 - Lunar Ivory: `#F6F1E8`
 - Champagne Beam: `#C8A96B`
-- 공식 로고 이미지: `LUNEVA-MANAGEMENT-LOGO-v01.png`
+- 로고 설계 정본: `00-로고/LUNEVA-MANAGEMENT-LOGO-v02-DESIGN-SPEC.md`
+- 선택 시안: `00-로고/LUNEVA-MANAGEMENT-LOGO-v02-ORBIT-FRAME-SELECTED.png`
+- 비교 시안: `00-로고/LUNEVA-MANAGEMENT-LOGO-v02-CONCEPTS-3WAY.png`
+- 기존 `LUNEVA-MANAGEMENT-LOGO-v01.png`는 v02 최종 4종 제작·검수 전까지 보존하고, 이후 구버전 처리 여부를 결정한다.
 
 ## 로고 인상
 
-원형의 Lunar Stage 심벌은 무대와 렌즈, 인물에게 집중되는 조명을 함께 연상시킨다. 중앙의 샴페인 골드 형태는 광고 캠페인의 중심에 놓인 인물과 브랜드의 빛을 상징한다. 우측의 대비가 강한 세리프 워드마크는 패션·뷰티 분야의 고급스러움을, 넓게 조판한 `MANAGEMENT`는 안정적인 실무 조직의 인상을 담당한다.
+Orbit Frame 심벌은 직접적인 별·점성술 장식 대신, 달의 원형과 궤도를 연상시키는 비대칭 이중 아크 구조를 사용한다. 달, 렌즈, 움직임, 인물을 감싸는 무대 프레임을 동시에 암시하며, Noir Ink의 굵은 주형과 Champagne Beam의 제한적 포인트로 절제된 고급감과 현대성을 표현한다. 심벌은 단색에서도 식별 가능해야 하고 작은 의류 마킹에서도 형태가 유지되어야 한다. `LUNEVA` 워드마크와 `MANAGEMENT` 조판은 기존 방향을 유지해 브랜드 연속성을 확보한다.
+
+## 공식 로고 산출물 규칙
+
+최종 v02 로고는 아래 4종을 정본으로 제작·보관한다.
+
+1. `LUNEVA-MANAGEMENT-LOGO-v02-VERTICAL-LIGHT.png`
+2. `LUNEVA-MANAGEMENT-LOGO-v02-VERTICAL-DARK.png`
+3. `LUNEVA-MANAGEMENT-LOGO-v02-HORIZONTAL-LIGHT.png`
+4. `LUNEVA-MANAGEMENT-LOGO-v02-HORIZONTAL-DARK.png`
+
+각 파일은 설명용 시안 보드가 아니라 충분한 안전 여백을 가진 단일 완성 락업 이미지여야 한다.
 
