@@ -1,0 +1,10 @@
+import { listDriveChildren, downloadDriveText, DRIVE_FOLDER_MIME } from './src/google-drive-settings.ts'
+import { getServiceAccountAccessToken } from './src/google-service-account.ts'
+const rootId=process.env.GOOGLE_SETTINGS_ROOT_FOLDER_ID?.trim() || '1WEBpOqPKjlPMBD1fCCzqU8ojRuyQWJGF'
+const token=await getServiceAccountAccessToken({email:process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL??'',privateKey:process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY??''})
+async function child(parentId,name,folder){let pt;const out=[];do{const p=await listDriveChildren({token,parentId,pageToken:pt,pageSize:100,wait:async()=>{}});for(const f of p.files){if(f.name===name && (f.mimeType===DRIVE_FOLDER_MIME)===folder) out.push(f)}pt=p.nextPageToken||undefined}while(pt);if(out.length!==1)throw new Error(`${name} found ${out.length}`);return out[0]}
+const lux=await child(rootId,'룩스테라',true)
+const secret=await child(lux.id,'비밀 설정',true)
+const f=await child(secret.id,'비밀 설정.md',false)
+const text=await downloadDriveText({token,fileId:f.id,wait:async()=>{}})
+console.log(JSON.stringify({fileId:f.id,modifiedTime:f.modifiedTime,chars:text.length,bytes:Buffer.byteLength(text),text},null,2))
