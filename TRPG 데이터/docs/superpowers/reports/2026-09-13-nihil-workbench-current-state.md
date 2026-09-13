@@ -197,6 +197,22 @@ Identifier/Source 전체 필드와 조건부 Identification/Unidentified 편집�
 
 물리 Item의 Inventory/Economy 및 장착/조율 공통 필드를 조건부 편집하도록 확장했다. Weapon E2E 및 Spell/Loot 비지원 UI 미노출을 검증했다. 전체 테스트는 환경 의존 pack verifier 제외 `69/69` 통과했다.
 
+## 2026-09-13 CORE-006 / CORE-007 완료
+
+Uses/Recovery를 D&D5e 5.2.4 원본 스키마에 맞게 확장했고 Item 생성 시 현재 Folder 기본 선택을 적용했다. Formula max, 복수 Recovery, recharge 정규화, Consumable autoDestroy, 생성 다이얼로그 Folder 초기값을 AI-GPT 실환경에서 검증했다. 공통 Item Core `CORE-001`~`CORE-007`이 완료됐고 다음 구현은 `TYPE-WEAPON-001`이다.
+
+## 2026-09-13 TYPE-*-001 완료
+
+13개 Item 계열의 직접 본체 필드를 schema-driven Type Editor로 확장하고 타입별 Fixture E2E를 순차 통과했다. 다음 독립 서브시스템은 `ACT-001` Activity CRUD다.
+
+## 2026-09-13 Activity Editor 완료
+
+`ACT-001`~`ACT-004`를 완료했다. CRUD, 공통 schema, 핵심 12 discriminator, 외부 Activity raw 보존/고급 Sheet fallback을 실환경에서 검증했다. 다음 단계는 Advancement Editor다.
+
+## 2026-09-13 섹션 접기 UI 완료
+
+Workbench 주요 편집 카드 14개를 collapsible details/summary 구조로 통일했고, 섹션별 열림 상태를 인스턴스 내에서 보존하여 재렌더에도 유지되게 했다.
+
 ## 정확한 재개 지점
 
 `SYNC-001`~`SYNC-003` 외부 Folder/Item 실시간 동기화는 완료했다. 다음 구현은 공통 Item Core `CORE-006` Uses / Recovery 완전 지원이다.
@@ -239,3 +255,5 @@ Workbench 저장 성공 여부와 이 서드파티 Hook 오류는 분리해서 �
 ## Git 주의
 
 현재 브랜치의 Workbench·Importer·Compendium LevelDB 현재 상태는 사용자 승인에 따라 체크포인트 `c90aae6`으로 함께 커밋했다. push는 시도했으나 현재 컨테이너에 HTTPS credential helper·token·SSH 실행 환경이 없어 인증 단계에서 중단됐다.
+- 최신 전체 회귀 테스트: 환경 의존 pack verifier 제외 `76/76` 통과.
+- 최신 전체 회귀 테스트: 환경 의존 pack verifier 제외 `94/94` 통과.

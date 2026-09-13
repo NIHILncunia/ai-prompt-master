@@ -1004,7 +1004,53 @@ AI-GPT 실환경에서 Weapon Fixture 저장/readback/원복 및 Spell 비노출
 
 Workbench는 각 필드의 dotted path만 부분 update하며, 지원하지 않는 Item 타입에는 해당 UI와 update path를 만들지 않는다. Weapon Fixture 저장/readback/원복과 Spell/Loot 비지원 UI 미노출을 AI-GPT 실환경에서 검증했다.
 
-## 25. 문서 갱신 규칙
+## 25. D&D5e Item Uses / Recovery 및 Item createDialog Folder 기본값 — Verified
+
+D&D5e 5.2.4 Item의 `system.uses.max`는 `FormulaField`이므로 숫자로 강제 변환하면 `@prof` 같은 유효 수식이 손실된다. Workbench에서는 source 문자열을 그대로 읽고 저장한다. `system.uses.recovery`는 복수 배열이며 각 entry는 `period`, `type`, `formula`를 사용한다. Recovery type은 `recoverAll`, `loseAll`, `formula` 3종이다. period는 `lr`, `sr`, `day`, `dawn`, `dusk`, `initiative`, `turnStart`, `turnEnd`, `turn`에 특수 `recharge`가 추가된다.
+
+`recharge` recovery는 시스템 준비 단계에서 type이 `recoverAll`로 정규화되며 formula는 재충전 기준값으로 사용된다. Native Uses UI와 동일하게 Workbench도 복수 Recovery 행 추가/삭제를 제공하고, recharge에서는 type을 `recoverAll`로 강제한다. Consumable의 Uses schema에는 `autoDestroy`가 추가되며 해당 필드가 존재하는 Item에서만 UI를 노출한다. AI-GPT 실환경에서 Weapon `max=@prof`, `sr + recharge` 복수 recovery 저장/readback/원복과 Consumable `autoDestroy` 저장/readback/원복을 확인했다.
+
+Foundry V13 `Item.createDialog(data, createOptions, dialogOptions)`는 첫 번째 `data.folder`에 Folder ID를 전달하면 생성 다이얼로그의 초기 Folder 선택값으로 사용한다. Workbench의 Item 생성은 `Item.createDialog({ folder: currentFolderId })` 형태로 구현했으며, `NCM TEST - Item Type Coverage` Folder에서 다이얼로그의 `select[name=folder]` 값이 실제 Folder ID와 일치함을 AI-GPT 실환경에서 확인했다.
+
+## 26. D&D5e Schema-driven Item Type Field 편집 — Verified
+
+D&D5e 5.2.4의 `item.system.schema.fields`는 Item type별 source DataField 구조를 런타임에 제공한다. Workbench는 이를 재귀 탐색하여 공통 Core, `activities`, `advancement`를 제외한 직접 Item 본체 필드를 자동 편집한다. `SchemaField` 계열은 하위 필드로 재귀 전개하고 Boolean/Number/String/Formula 계열은 직접 컨트롤로, Set/Array/Mapping 같은 복합 구조는 JSON fallback으로 편집한다.
+
+이 구조는 Weapon부터 Facility까지 13개 사용자 편집 계열과 Container/Backpack alias에 적용 가능하다. AI-GPT 실환경에서 각 타입 Fixture를 Workbench UI로 변경하고 `toObject()` readback 후 원복하는 E2E를 순차 통과했다. Container `currency` MappingField도 JSON 편집 및 원복을 확인했다.
+
+Activity와 Advancement는 source schema에 존재하지만 각각 독립 서브시스템이므로 schema-driven Type Editor에서는 제외하고 `ACT-*`, `ADV-*` 전용 adapter가 소유한다.
+
+## 27. D&D5e Activity CRUD·Schema·외부 Fallback — Verified
+
+D&D5e 5.2.4 Item의 `system.activities`는 `ActivityCollection`이며 Activity는 PseudoDocument 계열 Document로 `update()`, `delete()`, `clone()`을 제공한다. Item은 `createActivity(type, data, options)`, `updateActivity(id, updates)`, `deleteActivity(id)`를 제공한다. Workbench 생성은 `item.createActivity(type, data, { renderSheet: false })`를 사용하며 생성 전후 Activity ID를 비교해 새 문서를 찾는다.
+
+Native Item Sheet의 복제 방식과 동일하게 source `toObject()`에서 `_id`를 제거한 뒤 같은 discriminator로 `createActivity()` 하면 현재 `CONFIG.DND5E.activityTypes[type].documentClass`가 사용된다. 따라서 Midi-QOL처럼 Activity class를 확장한 환경에서도 subclass와 확장 source가 유지된다. AI-GPT 실환경에서 `MidiAttackActivity`를 복제해 `midiProperties`와 추가 확장 필드 보존을 확인했다.
+
+생성 가능한 discriminator 선택지는 `CONFIG.DND5E.activityTypes`에서 `configurable !== false`이며 `documentClass.availableForItem(item)`이 허용하는 항목만 사용한다. `OrderActivity`는 `order` 필드가 필수이며 D&D5e 5.2.4의 Facility 구현에서 파생 생성되는 ephemeral Activity다. 시스템 소스에도 user-creatable/configurable 전환이 TODO로 남아 있고 현재 `availableForItem()`은 신규 생성 경로를 허용하지 않는다. Workbench는 이 Native 계약을 존중해 Order를 신규 생성 목록에 강제 노출하지 않고 기존 Facility OrderActivity 편집만 지원한다.
+
+D&D5e 본체 12종 Activity 클래스는 `dnd5e.documents.activity` namespace의 `metadata.type`으로 식별할 수 있다. Workbench는 native schema에서 공통 root를 제외한 discriminator root를 가져오고, 실제 선택된 subclass schema로 세부 Field를 재귀 렌더한다. 핵심 discriminator는 `attack`, `cast`, `check`, `damage`, `enchant`, `forward`, `heal`, `order`, `save`, `summon`, `transform`, `utility`다. 12종 모두 실환경 렌더와 no-op source 보존을 검증했다.
+
+공통 Activity root는 `activation`, `consumption`, `description`, `duration`, `effects`, `flags`, `range`, `target`, `uses`, `visibility`이며 런타임에 존재하는 조건·macro 확장 필드는 조건부로 함께 편집한다. 변경된 dotted path만 `activity.update()`에 전달한다. Custom Field라도 source 값이 Array/Object/Set/Map이면 JSON 구조로 판정하고, null/undefined source의 빈 값·unchecked Boolean은 no-op으로 처리해 시스템 기본값을 불필요하게 materialize하지 않는다.
+
+외부 discriminator는 전용 schema를 추측하지 않는다. 공통 필드는 안전하게 편집하고 전체 source JSON을 읽기 전용으로 표시하며 `activity.sheet`를 여는 고급 편집 fallback을 제공한다. 현재 등록된 외부 `ddbmacro`의 `MacroActivity`를 임시 생성하여 raw source 보존과 Sheet fallback을 E2E로 확인했다.
+
+## 28. Nihil Workbench 목적별 Activity 빠른 추가 — Verified
+
+D&D5e 5.2.4 + Midi-QOL 환경에서 일반적인 Activity 편집은 내부 schema를 직접 다루지 않고 목적별 상위 UI로 처리할 수 있다. Workbench는 `추가 피해`, `회복 효과`, `내성 공격`, `상태 효과`를 한국어 빠른 추가 경로로 제공하고, 기존 schema-driven editor는 특수 필드와 외부 모듈 호환을 위한 `고급 Activity 설정`으로 유지한다.
+
+`추가 피해`는 선택된 `attack`/`damage`/`save` Activity의 기존 `damage.parts` 배열을 보존한 채 새 DamageField source 한 행만 append한다. 따라서 사거리·대상·범위는 기존 Activity 값을 상속한다. AI-GPT E2E에서 기존 0행 → `2d6 + 1` fire 1행 추가를 확인한 뒤 원복했다.
+
+`회복 효과`는 `heal` Activity를 생성하며 사용자 입력을 `range`, `target`, `healing.custom.formula`, `healing.types`로 매핑한다. E2E에서 60ft, 아군 2명, 10ft circle, `2d8 + 3` healing 저장/readback/삭제를 확인했다.
+
+`내성 공격`은 `save` Activity를 생성하며 `range`, `target`, `damage.parts`, `damage.onSave`, `save.ability`, `save.dc`만 일반 UI에서 입력한다. E2E에서 150ft, 15ft circle, fire `7d6`, DEX DC17, 성공 시 half 저장/readback/삭제를 확인했다.
+
+`상태 효과`는 선택 Activity에 연결되는 Item ActiveEffect를 생성한다. E2E에서 poisoned, 2 rounds 효과 생성과 Activity effect reference 연결을 확인한 뒤 삭제했다.
+
+사용자 표시명은 한국어를 우선한다. Activity type은 `공격`, `피해`, `회복`, `내성 굴림` 등으로 표시하며 고급 schema root도 `발동`, `사거리`, `대상 / 범위`, `피해`, `내성 굴림`, `회복`, `소모` 등으로 표시한다. 실제 내부 path는 디버깅/호환성 확인을 위해 보조 텍스트로 유지한다.
+
+상세 사용자 가이드는 모듈 저장소의 `docs/workbench/nihil-workbench-user-guide-ko.md`에 기록한다.
+
+## 29. 문서 갱신 규칙
 
 다음 조건에서 이 문서를 갱신한다.
 

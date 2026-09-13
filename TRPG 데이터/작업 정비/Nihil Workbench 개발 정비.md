@@ -172,6 +172,32 @@ node --test tests/workbench-item-adapter.test.mjs tests/workbench-module.test.mj
 - `CORE-004`: 장착 가능 Item의 equipped/attunement/attuned 조건부 편집 및 E2E 완료.
 - 환경 의존 pack verifier 제외 전체 테스트 `69/69` 통과.
 
+## 최근 완료: 공통 Item Core 3차
+
+- `CORE-006`: Formula 기반 max, 복수 Recovery CRUD, recharge 특수 처리, Consumable autoDestroy 조건부 편집 및 E2E 완료.
+- `CORE-007`: Workbench Item 생성 시 현재 Browser Folder를 생성 다이얼로그 기본 Folder로 전달하도록 구현 및 E2E 완료.
+- 공통 Item Core `CORE-001`~`CORE-007` 완료.
+- 다음 개발 대상: `TYPE-WEAPON-001` Weapon 전체 필드.
+
+## 최근 완료: TYPE-*-001 전 타입 본체
+
+- Weapon, Equipment, Consumable, Tool, Loot, Container/Backpack, Spell, Feat, Race, Background, Class, Subclass, Facility 직접 Item 본체 필드 지원 완료.
+- schema-driven Type Editor로 runtime schema를 자동 추적하며 복합 필드는 JSON fallback을 유지한다.
+- Activity/Advancement는 ACT/ADV backlog로 분리한다.
+- 다음 개발 대상: `ACT-001` Activity CRUD.
+
+## 최근 완료: Activity Editor ACT-001~004
+
+- Activity CRUD, 공통 필드, D&D5e 핵심 12 discriminator, 외부 discriminator fallback 구현 및 E2E 완료.
+- Midi-QOL 확장 Activity source 보존 및 ddbmacro Native Sheet fallback 검증 완료.
+- 다음 개발 대상: `ADV-001` Advancement CRUD 및 공통 편집.
+
+## 최근 완료: 편집 섹션 접기/펼치기
+
+- 좌측 편집 영역의 14개 주요 카드가 모두 접고 펼칠 수 있다.
+- 기본은 펼침이며 사용자가 선택한 open/closed 상태는 Workbench 재렌더 후에도 유지된다.
+- `NCM TEST - weapon` 실환경 상태 유지 E2E 통과.
+
 ## 정확한 재개 지점
 
 현재 구현·분석 이후 모든 후속 작업은 `docs/workbench/nihil-workbench-backlog-2026-09-13.md`를 단일 backlog 정본으로 사용한다.
@@ -238,3 +264,5 @@ Nihil Workbench의 데이터 저장 성공 여부와 외부 모듈 콘솔 오류
 ## 다음
 
 Item 전 타입 커버리지 분석 보고서를 기준으로 공통 Item Core부터 확장한다. 이후 물리 Item 계열 → Activity 전 타입 → Spell/Feat → Advancement → Race/Background/Class/Subclass → Facility 순으로 진행한다.
+- 최신 전체 회귀 테스트: 환경 의존 pack verifier 제외 `76/76` 통과.
+- 최신 전체 회귀 테스트: 환경 의존 pack verifier 제외 `94/94` 통과.
